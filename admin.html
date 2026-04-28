@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель — FitChallenge</title>
+    
+    <!-- Элегантные шрифты -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> 
+    <script src="https://unpkg.com/feather-icons"></script>
+    
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">Fit<span>Challenge</span></a>
+            <nav class="nav">
+                <a href="index.html">Главная</a>
+                <a href="challenges.html">Челленджи</a>
+                 <a href="map.html">Площадки</a>
+                <a href="rating.html">Рейтинг</a>
+                <a href="tips.html">Советы</a>
+                <a href="about.html">О проекте</a>
+                <a href="profile.html">Профиль</a>
+                <a href="admin.html" class="active">Админ</a>
+                <button id="logoutBtn" class="logout-btn">Выйти</button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div id="adminContent">Загрузка...</div>
+        </div>
+    </main>
+
+    <footer class="footer-new">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 FitChallenge. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        console.log('=== ADMIN PANEL ===');
+        
+        // ===== ПРОВЕРКА ДОСТУПА =====
+        function getCurrentUser() {
+            const saved = localStorage.getItem('currentUser');
+            if (!saved) return null;
+            return JSON.parse(saved);
+        }
+        
+        function checkAdminAccess() {
+            const user = getCurrentUser();
+            if (!user || user.role !== 'admin') {
+                alert('Доступ запрещен. Только для администратора.');
+                window.location.href = 'index.html';
+                return false;
+            }
+            return true;
+        }
+        
+        // ===== РАБОТА С ЧЕЛЛЕНДЖАМИ =====
+        function getChallenges() {
+            return JSON.parse(localStorage.getItem('challenges') || '[]');
+        }
+        
+        function saveChallenges(challenges) {
+            localStorage.setItem('challenges', JSON.stringify(challenges));
+        }
+        
+        function getUsers() {
+            return JSON.parse(localStorage.getItem('users') || '[]');
+        }
+        
+        function getParticipantsCount(challengeId) {
+            const progress = JSON.parse(localStorage.getItem('progress') || '[]');
+            const unique = new Set(progress.filter(p => p.challengeId === challengeId).map(p => p.userId));
+            return unique.size;
+        }
+        
+        function formatDate(d) {
+            return d ? new Date(d).toLocaleDateString('ru-RU') : '—';
+        }
+        
+        // ===== ДЕЙСТВИЯ =====
+        function createChallenge() {
+            const title = document.getElementById('newTitle').value.trim();
+            const description = document.getElementById('newDescription').value.trim();
+            const duration = parseInt(document.getElementById('newDuration').value);
+            const rules = document.getElementById('newRules').value.trim();
+            const image = document.getElementById('newImage').value.trim();
+            
+            if (!title || !description || !duration || !rules) {
+                alert('Заполните все обязательные поля!');
+                return;
+            }
+            
+            const challenges = getChallenges();
+            const newChallenge = {
+                id: Date.now(),
+                title,
+                description,
+                duration,
+                rules,
+                image: image || '',
+                status: 'active',
+                createdAt: new Date().toISOString()
+            };
+            
+            challenges.push(newChallenge);
+            saveChallenges(challenges);
+            
+            alert(`✅ Челлендж «${title}» создан!`);
+            render();
+        }
+        
+        function updateChallenge(id) {
+            const challenges = getChallenges();
+            const index = challenges.findIndex(c => c.id === id);
+            if (index === -1) return;
+            
+            const title = document.getElementById(`editTitle-${id}`).value.trim();
+            const description = document.getElementById(`editDescription-${id}`).value.trim();
+            const duration = parseInt(document.getElementById(`editDuration-${id}`).value);
+            const rules = document.getElementById(`editRules-${id}`).value.trim();
+            const image = document.getElementById(`editImage-${id}`).value.trim();
+            
+            if (!title || !description || !duration || !rules) {
+                alert('Заполните все обязательные поля!');
+                return;
+            }
+            
+            challenges[index] = {
+                ...challenges[index],
+                title,
+                description,
+                duration,
+                rules,
+                image: image || challenges[index].image || ''
+            };
+            
+            saveChallenges(challenges);
+            alert(`✅ Челлендж обновлен!`);
+            render();
+        }
+        
+        function toggleStatus(id) {
+            const challenges = getChallenges();
+            const index = challenges.findIndex(c => c.id === id);
+            if (index === -1) return;
+            
+            challenges[index].status = challenges[index].status === 'active' ? 'finished' : 'active';
+            saveChallenges(challenges);
+            render();
+        }
+        
+        function deleteChallenge(id) {
+            if (!confirm('Удалить челлендж? Все данные прогресса участников будут потеряны.')) return;
+            
+            const challenges = getChallenges();
+            const filtered = challenges.filter(c => c.id !== id);
+            saveChallenges(filtered);
+            
+            // Удаляем прогресс по этому челленджу
+            const progress = JSON.parse(localStorage.getItem('progress') || '[]');
+            const newProgress = progress.filter(p => p.challengeId !== id);
+            localStorage.setItem('progress', JSON.stringify(newProgress));
+            
+            alert('🗑️ Челлендж удален');
+            render();
+        }
+        
+        function toggleEdit(id) {
+            const card = document.getElementById(`challenge-${id}`);
+            const viewMode = card.querySelector('.view-mode');
+            const editMode = card.querySelector('.edit-mode');
+            
+            if (viewMode.style.display === 'none') {
+                viewMode.style.display = 'block';
+                editMode.style.display = 'none';
+            } else {
+                viewMode.style.display = 'none';
+                editMode.style.display = 'block';
+            }
+        }
+        
+        // ===== ОТРИСОВКА =====
+        function render() {
+            if (!checkAdminAccess()) return;
+            
+            const user = getCurrentUser();
+            const challenges = getChallenges();
+            const users = getUsers();
+            
+            const activeChallenges = challenges.filter(c => c.status === 'active').length;
+            const finishedChallenges = challenges.filter(c => c.status === 'finished').length;
+            const totalUsers = users.length;
+            const totalParticipants = new Set(JSON.parse(localStorage.getItem('progress') || '[]').map(p => p.userId)).size;
+            
+            document.getElementById('adminContent').innerHTML = `
+                <div class="admin-header">
+                    <h2>Админ-панель</h2>
+                    <p>Добро пожаловать, ${user.name}!</p>
+                </div>
+                
+                <!-- Статистика -->
+                <div class="admin-stats-new">
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon"><i class="fas fa-trophy"></i></div>
+                        <div class="admin-stat-value">${challenges.length}</div>
+                        <div class="admin-stat-label">Всего челленджей</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon"><i class="fas fa-play-circle"></i></div>
+                        <div class="admin-stat-value">${activeChallenges}</div>
+                        <div class="admin-stat-label">Активных</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="admin-stat-value">${finishedChallenges}</div>
+                        <div class="admin-stat-label">Завершенных</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="admin-stat-value">${totalUsers}</div>
+                        <div class="admin-stat-label">Пользователей</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon"><i class="fas fa-user-check"></i></div>
+                        <div class="admin-stat-value">${totalParticipants}</div>
+                        <div class="admin-stat-label">Участников</div>
+                    </div>
+                </div>
+                
+                <div class="admin-tabs-new">
+                    <button class="admin-tab-new active" data-tab="challenges"><i class="fas fa-trophy"></i> Челленджи</button>
+                    <button class="admin-tab-new" data-tab="users"><i class="fas fa-users"></i> Пользователи</button>
+                </div>
+                
+                <div class="admin-tab-content-new active" id="tab-challenges">
+                    <!-- Форма создания -->
+                    <div class="admin-section-new">
+                        <h3><i class="fas fa-plus-circle"></i> Создать новый челлендж</h3>
+                        <div class="form-row-new">
+                            <div class="form-group">
+                                <label>Название *</label>
+                                <input type="text" id="newTitle" placeholder="Например: 100 отжиманий">
+                            </div>
+                            <div class="form-group">
+                                <label>Длительность (дней) *</label>
+                                <input type="number" id="newDuration" min="1" value="30">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Краткое описание *</label>
+                            <input type="text" id="newDescription" placeholder="Опишите челлендж в двух словах">
+                        </div>
+                        <div class="form-group">
+                            <label>Правила *</label>
+                            <textarea id="newRules" rows="3" placeholder="Подробные правила челленджа"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Ссылка на фото (URL)</label>
+                            <input type="text" id="newImage" placeholder="https://example.com/fitness.jpg">
+                            <small style="color: var(--gray); font-size: 12px; margin-top: 5px; display: block;">
+                                <i class="fas fa-info-circle"></i> Можно использовать фото с Unsplash, Pexels или своё
+                            </small>
+                        </div>
+                        <button class="btn btn-primary" onclick="createChallenge()"><i class="fas fa-plus"></i> Создать челлендж</button>
+                    </div>
+                    
+                    <!-- Список челленджей -->
+                    <div class="admin-section-new">
+                        <h3><i class="fas fa-list"></i> Все челленджи</h3>
+                        <div class="admin-challenges-list-new">
+                            ${challenges.length === 0 ? '<p class="empty-message">Нет челленджей. Создайте первый!</p>' : ''}
+                            ${challenges.map(c => {
+                                const participants = getParticipantsCount(c.id);
+                                return `
+                                    <div class="admin-challenge-item" id="challenge-${c.id}">
+                                        <div class="view-mode">
+                                            <div class="admin-challenge-preview">
+                                                ${c.image ? `<img src="${c.image}" alt="${c.title}" class="admin-challenge-img">` : '<div class="admin-challenge-placeholder"><i class="fas fa-dumbbell"></i></div>'}
+                                            </div>
+                                            <div class="admin-challenge-info">
+                                                <div class="admin-challenge-header">
+                                                    <h4>${c.title}</h4>
+                                                    <span class="admin-status-badge ${c.status}">${c.status === 'active' ? '🟢 Активен' : '⚫ Завершен'}</span>
+                                                </div>
+                                                <p class="admin-challenge-desc">${c.description}</p>
+                                                <div class="admin-challenge-meta">
+                                                    <span><i class="far fa-calendar"></i> ${c.duration} дней</span>
+                                                    <span><i class="far fa-user"></i> ${participants} участников</span>
+                                                    <span><i class="far fa-clock"></i> ${formatDate(c.createdAt)}</span>
+                                                </div>
+                                                <div class="admin-challenge-actions">
+                                                    <button class="btn-small" onclick="toggleEdit(${c.id})"><i class="fas fa-edit"></i> Редактировать</button>
+                                                    <button class="btn-small" onclick="toggleStatus(${c.id})"><i class="fas fa-${c.status === 'active' ? 'pause' : 'play'}"></i> ${c.status === 'active' ? 'Завершить' : 'Активировать'}</button>
+                                                    <button class="btn-small-delete" onclick="deleteChallenge(${c.id})"><i class="fas fa-trash"></i> Удалить</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="edit-mode" style="display: none;">
+                                            <h4>Редактирование: ${c.title}</h4>
+                                            <div class="form-row-new">
+                                                <div class="form-group">
+                                                    <label>Название</label>
+                                                    <input type="text" id="editTitle-${c.id}" value="${c.title}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Длительность (дней)</label>
+                                                    <input type="number" id="editDuration-${c.id}" value="${c.duration}" min="1">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Описание</label>
+                                                <input type="text" id="editDescription-${c.id}" value="${c.description}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Правила</label>
+                                                <textarea id="editRules-${c.id}" rows="3">${c.rules}</textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Ссылка на фото</label>
+                                                <input type="text" id="editImage-${c.id}" value="${c.image || ''}" placeholder="https://...">
+                                            </div>
+                                            <div class="admin-challenge-actions">
+                                                <button class="btn-small" onclick="updateChallenge(${c.id})"><i class="fas fa-save"></i> Сохранить</button>
+                                                <button class="btn-small-delete" onclick="toggleEdit(${c.id})"><i class="fas fa-times"></i> Отмена</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="admin-tab-content-new" id="tab-users">
+                    <div class="admin-section-new">
+                        <h3><i class="fas fa-users"></i> Зарегистрированные пользователи</h3>
+                        <div class="table-container-new">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Имя</th>
+                                        <th>Email</th>
+                                        <th>Роль</th>
+                                        <th>Дата регистрации</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${users.map(u => `
+                                        <tr>
+                                            <td>${u.id}</td>
+                                            <td><i class="fas fa-user-circle"></i> ${u.name}</td>
+                                            <td>${u.email}</td>
+                                            <td><span class="role-badge ${u.role}">${u.role === 'admin' ? '👑 Админ' : '💪 Участник'}</span></td>
+                                            <td>${formatDate(u.createdAt)}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                        ${users.length === 0 ? '<p class="empty-message">Нет пользователей</p>' : ''}
+                    </div>
+                </div>
+            `;
+            
+            // Обработчики вкладок
+            document.querySelectorAll('.admin-tab-new').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.admin-tab-new').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.admin-tab-content-new').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById(`tab-${this.dataset.tab}`).classList.add('active');
+                });
+            });
+        }
+        
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            render();
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+        });
+    </script>
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html>

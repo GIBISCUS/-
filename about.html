@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>О проекте — FitChallenge</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://unpkg.com/feather-icons"></script>    <!-- в <head> -->
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">Fit<span>Challenge</span></a>
+            <nav class="nav">
+                <a href="index.html">Главная</a>
+                <a href="challenges.html">Челленджи</a>
+                <a href="map.html">Площадки</a>
+                <a href="rating.html">Рейтинг</a>
+                <a href="tips.html">Советы</a>
+                <a href="about.html" class="active">О проекте</a>
+                <a href="#" id="profileLink" style="display: none;">Профиль</a>
+                <a href="#" id="adminLink" style="display: none;">Админ</a>
+                <a href="register.html" id="registerLink">Регистрация</a>
+                <a href="login.html" id="loginLink">Войти</a>
+                <button id="logoutBtn" class="logout-btn" style="display: none;">Выйти</button>
+                <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero -->
+        <section class="about-hero">
+            <div class="container">
+                <div class="about-hero-content">
+                    <h1>О проекте<br>FitChallenge</h1>
+                    <p>Платформа для тех, кто хочет изменить свою жизнь через привычки и челленджи</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Миссия -->
+<section class="about-mission-new">
+    <div class="container">
+        <div class="mission-content">
+            <div class="mission-icon"><i data-feather="target"></i></div>
+            <h2>Наша миссия</h2>
+            <p class="mission-text">
+                Мы создали <strong>FitChallenge</strong>, чтобы помочь людям формировать полезные привычки, 
+                достигать фитнес-целей и поддерживать друг друга на пути к здоровому образу жизни.
+            </p>
+            <p class="mission-text">
+                Мы верим, что <strong>маленькие шаги каждый день</strong> приводят к большим результатам. 
+                Наша платформа объединяет тех, кто хочет стать лучшей версией себя — 
+                через челленджи, отслеживание прогресса и поддержку сообщества.
+            </p>
+            <p class="mission-text">
+                FitChallenge — это не просто трекер привычек. Это <strong>место силы</strong>, 
+                где ты найдёшь мотивацию, когда захочется всё бросить, 
+                и поддержку, когда нужен толчок вперёд. 
+                Мы создали пространство, где каждый может начать с малого 
+                и прийти к большому результату.
+            </p>
+            <div class="mission-values">
+                <span><i data-feather="users"></i> Поддержка сообщества</span>
+                <span><i data-feather="target"></i> Достижение целей</span>
+                <span><i data-feather="bar-chart-2"></i> Постоянный рост</span>
+                <span><i data-feather="trending-up"></i> Здоровые привычки</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+        <!-- Возможности -->
+        <section class="about-features">
+            <div class="container">
+                <h2>Что есть на платформе</h2>
+                <div class="about-features-grid">
+                    <div class="about-feature-item">
+                        <div class="about-feature-icon"><i class="fas fa-trophy"></i></div>
+                        <h3>14+ челленджей</h3>
+                        <p>От отжиманий до медитации. Выбирайте по душе!</p>
+                    </div>
+                    <div class="about-feature-item">
+                        <div class="about-feature-icon"><i class="fas fa-calendar-check"></i></div>
+                        <h3>Календарь прогресса</h3>
+                        <p>Отмечайте дни и следите за серией</p>
+                    </div>
+                    <div class="about-feature-item">
+                        <div class="about-feature-icon"><i class="fas fa-medal"></i></div>
+                        <h3>Бейджи и достижения</h3>
+                        <p>Получайте награды за упорство</p>
+                    </div>
+                    <div class="about-feature-item">
+                        <div class="about-feature-icon"><i class="fas fa-chart-line"></i></div>
+                        <h3>Замеры и графики</h3>
+                        <p>Вес, объемы, динамика прогресса</p>
+                    </div>
+                    <div class="about-feature-item">
+                        <div class="about-feature-icon"><i class="fas fa-calculator"></i></div>
+                        <h3>КБЖУ-калькулятор</h3>
+                        <p>Расчёт дневной нормы калорий</p>
+                    </div>
+                    <div class="about-feature-item">
+                        <div class="about-feature-icon"><i class="fas fa-utensils"></i></div>
+                        <h3>Дневник питания</h3>
+                        <p>Записывайте приёмы пищи</p>
+                    </div>
+                    <div class="about-feature-item">
+                        <div class="about-feature-icon"><i class="fas fa-tint"></i></div>
+                        <h3>Трекер воды</h3>
+                        <p>Следите за водным балансом</p>
+                    </div>
+                    <div class="about-feature-item">
+                        <div class="about-feature-icon"><i class="fas fa-comments"></i></div>
+                        <h3>Комментарии и лайки</h3>
+                        <p>Общайтесь с участниками</p>
+                    </div>
+                    <div class="about-feature-item">
+                        <div class="about-feature-icon"><i class="fas fa-ranking-star"></i></div>
+                        <h3>Рейтинг и турниры</h3>
+                        <p>Соревнуйтесь и побеждайте</p>
+                    </div>
+                    <div class="about-feature-item">
+                        <div class="about-feature-icon"><i class="fas fa-book-open"></i></div>
+                        <h3>База знаний</h3>
+                        <p>Статьи, видео, музыка для тренировок</p>
+                    </div>
+                    <div class="about-feature-item">
+                        <div class="about-feature-icon"><i class="fas fa-moon"></i></div>
+                        <h3>Тёмная тема</h3>
+                        <p>Комфортно в любое время суток</p>
+                    </div>
+                    <div class="about-feature-item">
+                        <div class="about-feature-icon"><i class="fas fa-cloud-sun"></i></div>
+                        <h3>Погода</h3>
+                        <p>Планируйте пробежки по погоде</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Истории успеха -->
+<section class="about-tech">
+    <div class="container">
+        <div class="about-card">
+            <div class="about-icon"><i data-feather="star"></i></div>
+            <h2>Истории успеха</h2>
+            <p style="color: var(--gray); margin-bottom: 30px;">Реальные результаты участников FitChallenge</p>
+            
+            <div class="success-stories-horizontal">
+                <!-- Анна -->
+                <div class="story-card-h">
+                    <div class="story-photos">
+                        <div class="story-photo-item">
+                            <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=200&q=80" alt="До">
+                            <span class="label">До</span>
+                        </div>
+                        <div class="story-arrow">→</div>
+                        <div class="story-photo-item">
+                            <img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=200&q=80" alt="После">
+                            <span class="label">После</span>
+                        </div>
+                    </div>
+                    <h4>Анна, 28 лет</h4>
+                    <div class="challenge-name"><i data-feather="award"></i> 100 отжиманий — 30 дней</div>
+                    <p>«Никогда не думала, что смогу! За 30 дней я не пропустила ни одного дня. Руки стали рельефнее, спина выпрямилась. Спасибо FitChallenge за мотивацию!»</p>
+                </div>
+
+                <!-- Дмитрий -->
+                <div class="story-card-h">
+                    <div class="story-photos">
+                        <div class="story-photo-item">
+                            <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=200&q=80" alt="До">
+                            <span class="label">До</span>
+                        </div>
+                        <div class="story-arrow">→</div>
+                        <div class="story-photo-item">
+                            <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=200&q=80" alt="После">
+                            <span class="label">После</span>
+                        </div>
+                    </div>
+                    <h4>Дмитрий, 34 года</h4>
+                    <div class="challenge-name"><i data-feather="award"></i> Планка — 14 дней</div>
+                    <p>«Начал с 30 секунд, через 2 недели стоял 3 минуты! Календарь прогресса — лучший мотиватор. Теперь спина не болит после рабочего дня за компьютером.»</p>
+                </div>
+
+                <!-- Елена -->
+                <div class="story-card-h">
+                    <div class="story-photos">
+                        <div class="story-photo-item">
+                            <img src="https://images.unsplash.com/photo-1574680096145-d05b474b1e0c?w=200&q=80" alt="До">
+                            <span class="label">До</span>
+                        </div>
+                        <div class="story-arrow">→</div>
+                        <div class="story-photo-item">
+                            <img src="https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=200&q=80" alt="После">
+                            <span class="label">После</span>
+                        </div>
+                    </div>
+                    <h4>Елена, 25 лет</h4>
+                    <div class="challenge-name"><i data-feather="award"></i> 10 000 шагов — 21 день</div>
+                    <p>«Гулять каждый день оказалось не просто! Но я открыла новые маршруты, похудела на 3 кг и полюбила утренние прогулки. Всем советую!»</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+        <!-- Как это работает -->
+<section class="about-tech">
+    <div class="container">
+        <div class="about-card">
+            <div class="about-icon"><i data-feather="rocket"></i></div>
+            <h2>Как начать свой путь</h2>
+            <p style="color: var(--gray); margin-bottom: 30px;">Четыре простых шага к твоему преображению</p>
+            <div class="steps-horizontal">
+                <div class="step-card-wide">
+                    <div class="step-number-large">1</div>
+                    <div class="step-icon-circle"><i class="fas fa-user-plus"></i></div>
+                    <h4>Регистрируйтесь</h4>
+                    <p>Создайте аккаунт за одну минуту — нужен только email и имя. Вам сразу будут доступны все 14 челленджей.</p>
+                    <span class="step-tip"><i data-feather="sun"></i> После регистрации заполните профиль для точных рекомендаций</span>
+                </div>
+                <div class="step-card-wide">
+                    <div class="step-number-large">2</div>
+                    <div class="step-icon-circle"><i class="fas fa-search"></i></div>
+                    <h4>Выбирайте челлендж</h4>
+                    <p>Просмотрите 14+ челленджей по категориям: Сила, Кардио, ЗОЖ, Привычки. Или пройдите опрос — мы подберём идеальный вариант.</p>
+                    <span class="step-tip"><i data-feather="sun"></i> Начните с короткого челленджа на 7-14 дней для быстрого результата</span>
+                </div>
+                <div class="step-card-wide">
+                    <div class="step-number-large">3</div>
+                    <div class="step-icon-circle"><i class="fas fa-calendar-check"></i></div>
+                    <h4>Отмечайте прогресс</h4>
+                    <p>Каждый день нажимайте «<i data-feather="check-circle"></i> Отметить сегодня» на странице челленджа. Календарь заполняется, серия растёт — мотивация зашкаливает!</p>
+                    <span class="step-tip"><i data-feather="sun"></i> Не страшно пропустить день — просто продолжайте, серия начнётся заново</span>
+                </div>
+                <div class="step-card-wide">
+                    <div class="step-number-large">4</div>
+                    <div class="step-icon-circle"><i class="fas fa-trophy"></i></div>
+                    <h4>Получайте награды</h4>
+                    <p>Зарабатывайте бейджи: <i data-feather="star"></i> Новичок, <i data-feather="zap"></i> Огонь (7 дней), <i data-feather="target"></i> Снайпер (без пропусков), <i data-feather="trending-up"></i> Атлет (3 челленджа). Соревнуйтесь в рейтинге!</p>
+                    <span class="step-tip"><i data-feather="sun"></i> Делитесь успехами с друзьями через кнопку «Поделиться»</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+        <!-- FAQ -->
+        <section class="about-tech">
+            <div class="container">
+                <div class="about-card">
+                    <div class="about-icon"><i data-feather="help-circle"></i></div>
+                    <h2>Частые вопросы</h2>
+                    <div class="faq-list">
+                        <div class="faq-item" onclick="this.classList.toggle('open')">
+                            <div class="faq-question">Это бесплатно? <i class="fas fa-chevron-down"></i></div>
+                            <div class="faq-answer">Да, платформа полностью бесплатна и без рекламы.</div>
+                        </div>
+                        <div class="faq-item" onclick="this.classList.toggle('open')">
+                            <div class="faq-question">Как присоединиться? <i class="fas fa-chevron-down"></i></div>
+                            <div class="faq-answer">Зарегистрируйтесь, выберите челлендж и нажмите «Присоединиться».</div>
+                        </div>
+                        <div class="faq-item" onclick="this.classList.toggle('open')">
+                            <div class="faq-question">Можно несколько челленджей сразу? <i class="fas fa-chevron-down"></i></div>
+                            <div class="faq-answer">Да, участвуйте в любом количестве одновременно.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer-new">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand"><a href="index.html" class="footer-logo">Fit<span>Challenge</span></a><p>Платформа для лучшей версии себя</p></div>
+                <div class="footer-links"><a href="index.html">Главная</a><a href="challenges.html">Челленджи</a><a href="rating.html">Рейтинг</a><a href="tips.html">Советы</a><a href="about.html">О проекте</a></div>
+                <div class="footer-social"><a href="#"><i class="fab fa-telegram"></i></a><a href="#"><i class="fab fa-vk"></i></a><a href="#"><i class="fab fa-youtube"></i></a></div>
+            </div>
+            <div class="footer-bottom"><p>&copy; 2026 FitChallenge</p></div>
+        </div>
+    </footer>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        if (user) {
+            document.getElementById('profileLink').style.display = 'inline';
+            if (user.role === 'admin') document.getElementById('adminLink').style.display = 'inline';
+            document.getElementById('registerLink').style.display = 'none';
+            document.getElementById('loginLink').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'inline';
+        }
+        document.getElementById('logoutBtn')?.addEventListener('click', () => { localStorage.removeItem('currentUser'); location.href = 'index.html'; });
+        document.getElementById('profileLink')?.addEventListener('click', e => { e.preventDefault(); location.href = 'profile.html'; });
+        document.getElementById('adminLink')?.addEventListener('click', e => { e.preventDefault(); location.href = 'admin.html'; });
+
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-theme');
+            document.querySelector('#themeToggle i').className = 'fas fa-sun';
+        }
+        document.getElementById('themeToggle')?.addEventListener('click', () => {
+            const isDark = document.body.classList.toggle('dark-theme');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.querySelector('#themeToggle i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+        });
+    </script>
+    <script>
+    feather.replace();
+</script>
+</body>
+</html>

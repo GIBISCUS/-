@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitChallenge — Фитнес-челленджи</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> 
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">Fit<span>Challenge</span></a>
+            <nav class="nav">
+                <a href="index.html" class="active">Главная</a>
+                <a href="challenges.html">Челленджи</a>
+                <a href="map.html">Площадки</a>
+                <a href="rating.html">Рейтинг</a>
+                <a href="tips.html">Советы</a>
+                <a href="about.html">О проекте</a>
+                <a href="#" id="profileLink" style="display: none;">Профиль</a>
+                <a href="#" id="adminLink" style="display: none;">Админ</a>
+                <a href="register.html" id="registerLink">Регистрация</a>
+                <a href="login.html" id="loginLink">Войти</a>
+                <button id="logoutBtn" class="logout-btn" style="display: none;">Выйти</button>
+                <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero -->
+        <section class="hero-salon">
+            <div class="container">
+                <div class="hero-salon-card">
+                    <div class="hero-salon-content">
+                        <h1>Твоё тело —<br>твой главный проект</h1>
+                        <p>Присоединяйся к челленджам, отслеживай прогресс и достигай результатов вместе с нами.</p>
+                        <div class="hero-salon-buttons">
+                            <a href="challenges.html" class="btn btn-light">Выбрать челлендж <i class="fas fa-arrow-right"></i></a>
+                            <a href="register.html" class="btn btn-outline-dark">Начать сейчас</a>
+                        </div>
+                    </div>
+                    <div class="hero-salon-image">
+                        <img src="https://i.ibb.co/zWv1Z29m/i3ml-VGCa58-YQ1a-Mq-ESag-Cm-C9z-P2g-Pv3i1-ZYx-Fprg-BHPXs6sxf9g-Ff6-WTQRw-OTbcc5k-N8-MZj-LJGFWY3j-M0-Vl-M8.jpg" alt="Fitness">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+<!-- Статистика -->
+<section class="platform-stats-new">
+    <div class="container">
+        <div class="stats-bar">
+            <div class="stats-item">
+                <span class="stats-value" id="statUsers">0</span>
+                <span class="stats-label">участника присоединились<br>к челленджам на этой неделе</span>
+            </div>
+            <div class="stats-divider"></div>
+            <div class="stats-item">
+                <span class="stats-value" id="statChallenges">14</span>
+                <span class="stats-label">активных челленджей<br>доступны для участия</span>
+            </div>
+            <div class="stats-divider"></div>
+            <div class="stats-item">
+                <span class="stats-value" id="statCompleted">0</span>
+                <span class="stats-label">челленджей успешно<br>завершены участниками</span>
+            </div>
+            <div class="stats-divider"></div>
+            <div class="stats-item">
+                <span class="stats-value" id="statStreak">0</span>
+                <span class="stats-label">дней — лучшая серия<br>без пропусков</span>
+            </div>
+        </div>
+    </div>
+</section>
+        <!-- Цитата + Время/Календарь | Погода + Музыка -->
+        <section class="main-grid-section">
+            <div class="container">
+                <div class="main-grid">
+                    <!-- ЛЕВАЯ КОЛОНКА -->
+                    <div class="main-left">
+                        <!-- Цитата -->
+                        <div class="quote-full">
+                            <i class="fas fa-quote-left quote-icon"></i>
+                            <div>
+                                <p class="quote-text" id="dailyQuote">Загрузка...</p>
+                                <p class="quote-author" id="dailyQuoteAuthor"></p>
+                            </div>
+                        </div>
+                        <!-- Время + Календарь -->
+                        <div class="time-cal-row">
+                            <div class="mini-card time-card" style="display:flex;align-items:center;justify-content:center;padding:10px;">
+    <div style="text-align:center;">
+        <div id="currentTimeDisplay" style="font-family:'Cormorant Garamond',serif;font-size:110px;font-weight:700;line-height:0.9;color:var(--dark);">00:00</div>
+        <p id="currentDateDisplay" style="font-size:14px;color:var(--gray);margin-top:5px;">Загрузка...</p>
+    </div>
+</div>
+                            <div class="mini-card calendar-mini">
+    <div class="calendar-mini-full" id="miniMonth"></div>
+</div>
+                        </div>
+                    </div>
+                    <!-- ПРАВАЯ КОЛОНКА -->
+                    <div class="main-right">
+                        <!-- Погода -->
+                        <div class="weather-side" id="weatherCard">
+                            <div style="text-align:center;padding:25px;"><i class="fas fa-sun"></i><p>Загрузка...</p></div>
+                        </div>
+                        <!-- Музыка -->
+<div class="music-player-compact-card">
+    <div class="music-compact-header">
+        <i data-feather="music"></i>
+        <span>Workout Energy</span>
+    </div>
+    <div class="music-compact-tracklist">
+        <div class="music-compact-track active" onclick="selectTrack(0)">
+            <span class="compact-track-num">1</span>
+            <div class="compact-track-info">
+                <div class="compact-track-title">Power Up</div>
+                <div class="compact-track-artist">Epic Workout</div>
+            </div>
+            <span class="compact-track-dur">03:45</span>
+        </div>
+        <div class="music-compact-track" onclick="selectTrack(1)">
+            <span class="compact-track-num">2</span>
+            <div class="compact-track-info">
+                <div class="compact-track-title">Push Your Limits</div>
+                <div class="compact-track-artist">Gym Motivation</div>
+            </div>
+            <span class="compact-track-dur">04:12</span>
+        </div>
+        <div class="music-compact-track" onclick="selectTrack(2)">
+            <span class="compact-track-num">3</span>
+            <div class="compact-track-info">
+                <div class="compact-track-title">Beast Mode</div>
+                <div class="compact-track-artist">Training Mix</div>
+            </div>
+            <span class="compact-track-dur">03:28</span>
+        </div>
+    </div>
+    <div class="music-compact-controls">
+        <button class="ctrl-btn" onclick="prevTrack()"><i class="fas fa-backward"></i></button>
+        <button class="ctrl-btn ctrl-play" id="playBtn" onclick="togglePlay()"><i class="fas fa-play"></i></button>
+        <button class="ctrl-btn" onclick="nextTrack()"><i class="fas fa-forward"></i></button>
+        <span class="compact-time"><span id="currentTime">0:00</span> / <span id="totalTime">3:45</span></span>
+    </div>
+    <div class="music-compact-footer">
+        <a href="https://open.spotify.com/playlist/37i9dQZF1DX70RN3TfWWJh" target="_blank" class="btn btn-secondary btn-sm"><i class="fab fa-spotify"></i> Spotify</a>
+    </div>
+</div>
+        </section>
+        <!-- Преимущества -->
+<section class="features-new">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-tag">Почему мы</span>
+            <h2>Твой путь к совершенству</h2>
+            <p>Мы создали платформу, которая помогает достигать целей и не сдаваться</p>
+        </div>
+        <div class="features-grid-new">
+            <div class="feature-item">
+                <div class="feature-icon-new"><i class="fas fa-fire"></i></div>
+                <h3>Челленджи</h3>
+                <p>Выбирай челлендж по душе и двигайся к цели шаг за шагом</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon-new"><i class="fas fa-calendar-check"></i></div>
+                <h3>Отслеживание</h3>
+                <p>Отмечай прогресс каждый день и следи за своей серией</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon-new"><i class="fas fa-trophy"></i></div>
+                <h3>Достижения</h3>
+                <p>Получай награды за упорство и завершённые испытания</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon-new"><i class="fas fa-chart-line"></i></div>
+                <h3>Прогресс</h3>
+                <p>Веди замеры и смотри, как меняется твоё тело</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+        <!-- Новости -->
+        <section class="news-section">
+            <div class="container">
+                <div class="section-header"><span class="section-tag">Будь в курсе</span><h2>Новости платформы</h2></div>
+                <div class="news-grid" id="newsGrid"></div>
+            </div>
+        </section>
+
+        <!-- Турнир + Опрос -->
+        <section class="tournament-quiz-section">
+            <div class="container">
+                <div class="two-col-grid">
+                    <div class="tournament-card">
+                        <h3><i data-feather="award"></i> Турнир недели</h3>
+                        <div class="tournament-challenge" id="tournamentChallenge">Загрузка...</div>
+                        <div class="tournament-timer" id="tournamentTimer"></div>
+                        <div class="tournament-leaders" id="tournamentLeaders"></div>
+                        <a href="#" class="btn btn-primary" id="tournamentLink" style="width:100%;text-align:center;">Присоединиться</a>
+                    </div>
+                    <div class="quiz-card">
+                        <h3>🤔 С чего начать?</h3>
+                        <p>Ответьте на вопросы — подберём челлендж</p>
+                        <div id="quizQuestions">
+                            <div class="quiz-question" id="q1">
+                                <p><strong>Какая цель?</strong></p>
+                                <button class="btn btn-secondary btn-sm" onclick="answerQuiz('goal','strength')"><i data-feather="trending-up"></i> Сила</button>
+                                <button class="btn btn-secondary btn-sm" onclick="answerQuiz('goal','cardio')"><i data-feather="activity"></i> Кардио</button>
+                                <button class="btn btn-secondary btn-sm" onclick="answerQuiz('goal','health')"><i data-feather="heart"></i> ЗОЖ</button>
+                                <button class="btn btn-secondary btn-sm" onclick="answerQuiz('goal','mind')"><i data-feather="book-open"></i> Привычки</button>
+                            </div>
+                            <div class="quiz-question" id="q2" style="display:none">
+                                <p><strong>Сколько дней?</strong></p>
+                                <button class="btn btn-secondary btn-sm" onclick="answerQuiz('time','7')">7</button>
+                                <button class="btn btn-secondary btn-sm" onclick="answerQuiz('time','14')">14</button>
+                                <button class="btn btn-secondary btn-sm" onclick="answerQuiz('time','21')">21</button>
+                                <button class="btn btn-secondary btn-sm" onclick="answerQuiz('time','30')">30</button>
+                            </div>
+                            <div class="quiz-result" id="quizResult" style="display:none"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Популярные челленджи -->
+        <section class="challenges-preview">
+            <div class="container">
+                <div class="section-header"><span class="section-tag">Присоединяйся</span><h2>Популярные челленджи</h2></div>
+                <div class="challenges-grid-compact" id="activeChallenges"></div>
+                <div class="section-footer"><a href="challenges.html" class="btn btn-primary">Смотреть все <i class="fas fa-arrow-right"></i></a></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer-new">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand"><a href="index.html" class="footer-logo">Fit<span>Challenge</span></a><p>Платформа для лучшей версии себя</p></div>
+                <div class="footer-links"><a href="index.html">Главная</a><a href="challenges.html">Челленджи</a><a href="rating.html">Рейтинг</a><a href="tips.html">Советы</a><a href="about.html">О проекте</a></div>
+                <div class="footer-social"><a href="#"><i class="fab fa-telegram"></i></a><a href="#"><i class="fab fa-vk"></i></a><a href="#"><i class="fab fa-youtube"></i></a></div>
+            </div>
+            <div class="footer-bottom"><p>&copy; 2026 FitChallenge</p></div>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html>

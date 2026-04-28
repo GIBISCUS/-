@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль — FitChallenge</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">Fit<span>Challenge</span></a>
+            <nav class="nav">
+                <a href="index.html">Главная</a>
+                <a href="challenges.html">Челленджи</a>
+                <a href="map.html">Площадки</a>
+                <a href="rating.html">Рейтинг</a>
+                <a href="tips.html">Советы</a>
+                <a href="about.html">О проекте</a>
+                <a href="profile.html" class="active">Профиль</a>
+                <a href="#" id="adminLink" style="display: none;">Админ</a>
+                <button id="logoutBtn" class="logout-btn">Выйти</button>
+                <button class="theme-toggle" id="themeToggle" title="Переключить тему">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div id="profileContent">Загрузка...</div>
+        </div>
+    </main>
+
+    <footer class="footer-new">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 FitChallenge. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        console.log('=== PROFILE PAGE ===');
+        
+        feather.replace();
+        
+        // ===== ДАННЫЕ =====
+        function getCurrentUser() {
+            const saved = localStorage.getItem('currentUser');
+            if (!saved) return null;
+            const user = JSON.parse(saved);
+            if (!user.role) user.role = 'user';
+            return user;
+        }
+        
+        function getUserChallenges(userId) {
+            const progress = JSON.parse(localStorage.getItem('progress') || '[]');
+            const challenges = JSON.parse(localStorage.getItem('challenges') || '[]');
+            return progress.filter(p => p.userId === userId).map(p => {
+                const c = challenges.find(ch => ch.id === p.challengeId);
+                return { ...p, title: c?.title || '?', duration: c?.duration || 0, status: c?.status || '?' };
+            });
+        }
+        
+        function getUserBadges(userId) {
+            return JSON.parse(localStorage.getItem('badges') || '[]').filter(b => b.userId === userId);
+        }
+        
+        function getUserMeasurements(userId) {
+            return JSON.parse(localStorage.getItem('measurements') || '[]').filter(m => m.userId === userId).sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+        
+        function getUserPhotos(userId) {
+            const photos = JSON.parse(localStorage.getItem('userBodyPhotos') || '[]');
+            const userPhotos = photos.find(p => p.userId === userId);
+            return userPhotos || { 
+                userId, face: { before: null, after: null, beforeDate: null, afterDate: null },
+                body: { before: null, after: null, beforeDate: null, afterDate: null },
+                legs: { before: null, after: null, beforeDate: null, afterDate: null },
+                back: { before: null, after: null, beforeDate: null, afterDate: null },
+                arms: { before: null, after: null, beforeDate: null, afterDate: null }
+            };
+        }
+        
+        function formatDate(d) { return d ? new Date(d).toLocaleDateString('ru-RU') : ''; }
+        function calcStreak(c) { if (!c?.length) return 0; const s = [...c].sort((a,b)=>b-a); let st=1; for(let i=0;i<s.length-1;i++) if(s[i]-s[i+1]===1) st++; else break; return st; }
+        
+        // ===== ФОТО =====
+        let currentPart = 'face';
+        
+        function savePhoto(part, type) {
+            const input = document.getElementById(`photo-${part}-${type}`);
+            const file = input.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const user = getCurrentUser();
+                const photos = JSON.parse(localStorage.getItem('userBodyPhotos') || '[]');
+                let userPhotos = photos.find(p => p.userId === user.id);
+                
+                if (!userPhotos) {
+                    userPhotos = { userId: user.id,
+                        face: { before: null, after: null, beforeDate: null, afterDate: null },
+                        body: { before: null, after: null, beforeDate: null, afterDate: null },
+                        legs: { before: null, after: null, beforeDate: null, afterDate: null },
+                        back: { before: null, after: null, beforeDate: null, afterDate: null },
+                        arms: { before: null, after: null, beforeDate: null, afterDate: null }
+                    };
+                    photos.push(userPhotos);
+                }
+                
+                if (!userPhotos[part]) userPhotos[part] = { before: null, after: null, beforeDate: null, afterDate: null };
+                userPhotos[part][type] = e.target.result;
+                userPhotos[part][type + 'Date'] = new Date().toISOString();
+                
+                localStorage.setItem('userBodyPhotos', JSON.stringify(photos));
+                render();
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function deletePhoto(part, type) {
+            const user = getCurrentUser();
+            const photos = JSON.parse(localStorage.getItem('userBodyPhotos') || '[]');
+            const userPhotos = photos.find(p => p.userId === user.id);
+            if (userPhotos && userPhotos[part]) {
+                userPhotos[part][type] = null;
+                userPhotos[part][type + 'Date'] = null;
+                localStorage.setItem('userBodyPhotos', JSON.stringify(photos));
+            }
+            render();
+        }
+        
+        function switchPart(part) { currentPart = part; render(); }
+        
+        // ===== ЗАМЕРЫ =====
+        function addMeasurement() {
+            const user = getCurrentUser();
+            const w = document.getElementById('weight')?.value;
+            if (!w) { alert('Введите вес'); return; }
+            const m = JSON.parse(localStorage.getItem('measurements') || '[]');
+            m.push({ 
+                id: Date.now(), userId: user.id, date: new Date().toISOString(), 
+                weight: parseInt(w), 
+                chest: document.getElementById('chest')?.value ? parseInt(document.getElementById('chest').value) : null, 
+                waist: document.getElementById('waist')?.value ? parseInt(document.getElementById('waist').value) : null, 
+                hips: document.getElementById('hips')?.value ? parseInt(document.getElementById('hips').value) : null 
+            });
+            localStorage.setItem('measurements', JSON.stringify(m));
+            alert('<i data-feather="check-circle"></i> Замеры сохранены!');
+            render();
+        }
+        
+        function deleteMeasurement(id) {
+            if (!confirm('Удалить?')) return;
+            const m = JSON.parse(localStorage.getItem('measurements') || '[]');
+            localStorage.setItem('measurements', JSON.stringify(m.filter(x => x.id !== id)));
+            render();
+        }
+        
+        function exportMeasurements() {
+            const user = getCurrentUser();
+            const measurements = getUserMeasurements(user.id);
+            if (!measurements.length) { alert('Нет данных'); return; }
+            const sorted = [...measurements].sort((a, b) => new Date(a.date) - new Date(b.date));
+            let csv = 'Дата;Вес (кг);Грудь (см);Талия (см);Бедра (см)\n';
+            sorted.forEach(m => { csv += `${formatDate(m.date)};${m.weight};${m.chest||''};${m.waist||''};${m.hips||''}\n`; });
+            const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `FitChallenge_замеры_${user.name}.csv`;
+            link.click();
+        }
+        
+        // ===== ДНЕВНИК ПИТАНИЯ И ВОДА =====
+        let selectedDate = new Date();
+        
+        function changeDay(delta) { selectedDate.setDate(selectedDate.getDate() + delta); render(); }
+        function goToToday() { selectedDate = new Date(); render(); }
+        function goToDate(y, m, d) { selectedDate = new Date(y, m, d); render(); }
+        
+        function useCalorieGoal() {
+            const user = getCurrentUser();
+            const savedData = JSON.parse(localStorage.getItem('userCalorieData') || '{}');
+            const userData = savedData[user.id];
+            if (userData?.calories) {
+                localStorage.setItem('macroGoals', JSON.stringify({ calories: userData.calories, protein: userData.protein, fat: userData.fat, carbs: userData.carbs }));
+                alert('<i data-feather="check-circle"></i> Цели взяты из КБЖУ!');
+                render();
+            } else { alert('Сначала рассчитайте КБЖУ'); }
+        }
+        
+        function quickAddWater(amount) {
+            document.getElementById('waterAmountInput').value = amount;
+            addWater();
+        }
+        
+        function addWater() {
+            const user = getCurrentUser();
+            if (!user) return;
+            const waterAmount = parseInt(document.getElementById('waterAmountInput')?.value) || 0;
+            if (!waterAmount) return;
+            const todayStr = selectedDate.toDateString();
+            const foodData = JSON.parse(localStorage.getItem('foodDiary') || '{}');
+            if (!foodData[user.id]) foodData[user.id] = {};
+            if (!foodData[user.id][todayStr]) foodData[user.id][todayStr] = { meals: [], water: 0 };
+            foodData[user.id][todayStr].water += waterAmount;
+            localStorage.setItem('foodDiary', JSON.stringify(foodData));
+            render();
+        }
+        
+        function addFood() {
+            const user = getCurrentUser();
+            if (!user) return;
+            const meal = document.getElementById('mealName')?.value?.trim();
+            if (!meal) { alert('Введите название блюда'); return; }
+            const cals = parseInt(document.getElementById('mealCalories')?.value) || 0;
+            const protein = parseInt(document.getElementById('mealProtein')?.value) || 0;
+            const fat = parseInt(document.getElementById('mealFat')?.value) || 0;
+            const carbs = parseInt(document.getElementById('mealCarbs')?.value) || 0;
+            const mealType = document.getElementById('mealType')?.value || 'Перекус';
+            const todayStr = selectedDate.toDateString();
+            const foodData = JSON.parse(localStorage.getItem('foodDiary') || '{}');
+            if (!foodData[user.id]) foodData[user.id] = {};
+            if (!foodData[user.id][todayStr]) foodData[user.id][todayStr] = { meals: [], water: 0 };
+            foodData[user.id][todayStr].meals.push({ name: meal, calories: cals, protein, fat, carbs, mealType, time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) });
+            localStorage.setItem('foodDiary', JSON.stringify(foodData));
+            ['mealName','mealCalories','mealProtein','mealFat','mealCarbs'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+            render();
+        }
+        
+        function deleteFoodItem(index) {
+            const user = getCurrentUser();
+            const todayStr = selectedDate.toDateString();
+            const foodData = JSON.parse(localStorage.getItem('foodDiary') || '{}');
+            if (foodData[user.id]?.[todayStr]?.meals) {
+                foodData[user.id][todayStr].meals.splice(index, 1);
+                localStorage.setItem('foodDiary', JSON.stringify(foodData));
+            }
+            render();
+        }
+        
+        function renderFoodTab() {
+            const user = getCurrentUser();
+            const today = selectedDate;
+            const todayStr = today.toDateString();
+            const foodData = JSON.parse(localStorage.getItem('foodDiary') || '{}');
+            const todayData = foodData[user.id]?.[todayStr] || { meals: [], water: 0 };
+            const savedGoals = JSON.parse(localStorage.getItem('macroGoals') || '{}');
+            const goals = { calories: savedGoals.calories || 2200, protein: savedGoals.protein || 120, fat: savedGoals.fat || 80, carbs: savedGoals.carbs || 200 };
+            const totalCal = todayData.meals.reduce((s, m) => s + (m.calories || 0), 0);
+            const totalProtein = todayData.meals.reduce((s, m) => s + (m.protein || 0), 0);
+            const totalFat = todayData.meals.reduce((s, m) => s + (m.fat || 0), 0);
+            const totalCarbs = todayData.meals.reduce((s, m) => s + (m.carbs || 0), 0);
+            const calPercent = Math.min(100, Math.round((totalCal / goals.calories) * 100));
+            const proteinPercent = Math.min(100, Math.round((totalProtein / goals.protein) * 100));
+            const fatPercent = Math.min(100, Math.round((totalFat / goals.fat) * 100));
+            const carbsPercent = Math.min(100, Math.round((totalCarbs / goals.carbs) * 100));
+            
+            let weekHtml = '<div class="macro-week">';
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date(today);
+                d.setDate(d.getDate() - i);
+                const ds = d.toDateString();
+                const dd = foodData[user.id]?.[ds];
+                const dayCal = dd?.meals?.reduce((s, m) => s + (m.calories || 0), 0) || 0;
+                const dayPercent = Math.min(100, Math.round((dayCal / goals.calories) * 100));
+                const isSelected = d.toDateString() === today.toDateString();
+                weekHtml += `<div class="macro-day ${isSelected ? 'macro-today' : ''}" onclick="goToDate(${d.getFullYear()},${d.getMonth()},${d.getDate()})"><div class="macro-ring" style="--percent: ${dayPercent}%; --color: ${dayPercent>=80?'#606C38':dayPercent>=50?'#A7A15E':'#D4C9A8'}"><span>${d.getDate()}</span></div><span class="macro-day-label">${['Вс','Пн','Вт','Ср','Чт','Пт','Сб'][d.getDay()]}</span></div>`;
+            }
+            weekHtml += '</div>';
+            
+            let mealsHtml = '';
+            const mealTypes = ['Завтрак', 'Обед', 'Ужин', 'Перекус'];
+            mealTypes.forEach(type => {
+                const meals = todayData.meals.filter(m => m.mealType === type);
+                if (meals.length) {
+                    const mealCal = meals.reduce((s, m) => s + (m.calories || 0), 0);
+                    const mealProt = meals.reduce((s, m) => s + (m.protein || 0), 0);
+                    const mealFat = meals.reduce((s, m) => s + (m.fat || 0), 0);
+                    const mealCarbs = meals.reduce((s, m) => s + (m.carbs || 0), 0);
+                    mealsHtml += `<div class="meal-group"><div class="meal-group-header"><span>${type}</span><span>${mealCal} ккал | Б:${mealProt} Ж:${mealFat} У:${mealCarbs}</span></div>${meals.map((m, idx) => `<div class="meal-item-row"><span>${m.name}</span><span style="color:var(--gray)">${m.calories} ккал</span><span style="font-size:11px;color:var(--gray)">Б:${m.protein||0} Ж:${m.fat||0} У:${m.carbs||0}</span><button class="btn-icon" onclick="deleteFoodItem(${idx})">🗑️</button></div>`).join('')}</div>`;
+                }
+            });
+            if (!mealsHtml) mealsHtml = '<p style="color:var(--gray);text-align:center;padding:20px;">Запишите свой первый приём пищи</p>';
+            
+            return `
+                <div class="macro-tracker">
+                    <div class="day-nav">
+                        <button class="btn btn-secondary btn-sm" onclick="changeDay(-1)"><i class="fas fa-chevron-left"></i></button>
+                        <span class="day-nav-date" onclick="goToToday()">${today.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+                        <button class="btn btn-secondary btn-sm" onclick="changeDay(1)"><i class="fas fa-chevron-right"></i></button>
+                        ${today.toDateString() !== new Date().toDateString() ? '<button class="btn btn-secondary btn-sm" onclick="goToToday()">Сегодня</button>' : ''}
+                    </div>
+                    <h3><i data-feather="calendar"></i> ${today.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })}</h3>
+                    ${weekHtml}
+                    <div class="macro-goals-header"><span><i data-feather="target"></i> Цели на день</span><button class="btn btn-secondary btn-sm" onclick="useCalorieGoal()"><i data-feather="bar-chart-2"></i> Взять из КБЖУ</button></div>
+                    <div class="macro-rings-row"><div class="macro-ring-big" style="--percent: ${calPercent}%; --color: #606C38"><div class="macro-ring-inner"><span class="macro-ring-value">${totalCal}</span><span class="macro-ring-goal">/ ${goals.calories} ккал</span><span class="macro-ring-pct">${calPercent}%</span></div></div></div>
+                    <div class="macro-bars">
+                        <div class="macro-bar-row"><div class="macro-bar-label">Белки</div><div class="macro-bar-track"><div class="macro-bar-fill" style="width:${proteinPercent}%;background:#606C38;"></div></div><div class="macro-bar-nums">${totalProtein} / ${goals.protein} г</div></div>
+                        <div class="macro-bar-row"><div class="macro-bar-label">Жиры</div><div class="macro-bar-track"><div class="macro-bar-fill" style="width:${fatPercent}%;background:#A7A15E;"></div></div><div class="macro-bar-nums">${totalFat} / ${goals.fat} г</div></div>
+                        <div class="macro-bar-row"><div class="macro-bar-label">Углеводы</div><div class="macro-bar-track"><div class="macro-bar-fill" style="width:${carbsPercent}%;background:#D4C9A8;"></div></div><div class="macro-bar-nums">${totalCarbs} / ${goals.carbs} г</div></div>
+                    </div>
+                    <div class="meals-summary"><h4><i data-feather="coffee"></i> Приёмы пищи</h4>${mealsHtml}</div>
+                    <div class="add-meal-form">
+                        <h4>➕ Записать еду</h4>
+                        <div class="meal-form-row"><div class="meal-field"><label>Название</label><input type="text" id="mealName" placeholder="Овсянка с бананом"></div><div class="meal-field"><label>Ккал</label><input type="number" id="mealCalories" value="0"></div></div>
+                        <div class="meal-form-row"><div class="meal-field"><label>Белки (г)</label><input type="number" id="mealProtein" value="0"></div><div class="meal-field"><label>Жиры (г)</label><input type="number" id="mealFat" value="0"></div><div class="meal-field"><label>Углеводы (г)</label><input type="number" id="mealCarbs" value="0"></div></div>
+                        <div class="meal-form-row"><div class="meal-field"><label>Приём</label><select id="mealType"><option>Завтрак</option><option>Обед</option><option>Ужин</option><option>Перекус</option></select></div><button class="btn btn-primary" onclick="addFood()" style="align-self:flex-end;margin-top:20px;">➕ Добавить</button></div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderWaterTab() {
+            const user = getCurrentUser();
+            const foodData = JSON.parse(localStorage.getItem('foodDiary') || '{}');
+            const userData = foodData[user.id] || {};
+            const today = new Date();
+            const waterGoal = 2000;
+            let weeklyData = [];
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today); date.setDate(date.getDate() - i);
+                const ds = date.toDateString();
+                const dd = userData[ds] || { water: 0 };
+                weeklyData.push({ dayName: date.toLocaleDateString('ru-RU',{weekday:'short'}), dayNum: date.getDate(), dateString: ds, water: dd.water, percent: Math.min(100, Math.round((dd.water / waterGoal) * 100)) });
+            }
+            const todayStr = today.toDateString();
+            const todayData = userData[todayStr] || { water: 0 };
+            const todayPercent = Math.min(100, Math.round((todayData.water / waterGoal) * 100));
+            
+            let ringsHtml = weeklyData.map((day, idx) => {
+                const isToday = idx === 6;
+                const dash = `${day.percent} ${100-day.percent}`;
+                return `<div class="water-ring-item ${isToday?'active':''}"><div class="water-ring"><svg viewBox="0 0 36 36"><path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--border)" stroke-width="2"/><path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--primary)" stroke-width="2" stroke-dasharray="${dash}" stroke-linecap="round"/></svg><span class="water-ring-value">${day.percent}%</span></div><span class="water-ring-label">${day.dayName}</span><span class="water-ring-date">${day.dayNum}</span></div>`;
+            }).join('');
+            
+            return `
+                <div class="water-tracker-new">
+                    <div class="water-today"><h3><i data-feather="droplet"></i> Баланс воды</h3>
+                        <div class="water-main-ring">
+                            <svg viewBox="0 0 36 36" class="water-main-svg">
+                                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="url(#waterGradient)" stroke-width="3" stroke-dasharray="${todayPercent} ${100-todayPercent}" stroke-linecap="round"/>
+                                <defs><linearGradient id="waterGradient"><stop offset="0%" stop-color="var(--primary-light)"/><stop offset="100%" stop-color="var(--primary)"/></linearGradient></defs>
+                            </svg>
+                            <div class="water-main-info"><span class="water-main-value">${todayData.water}</span><span class="water-main-label">из ${waterGoal} мл</span></div>
+                        </div>
+                    </div>
+                    <div class="water-add">
+                        <button class="btn btn-primary btn-sm" onclick="quickAddWater(250)">+250 мл</button>
+                        <button class="btn btn-primary btn-sm" onclick="quickAddWater(500)">+500 мл</button>
+                        <input type="number" id="waterAmountInput" value="200" min="50" max="2000" step="50" style="width:80px;padding:10px;border:1.5px solid var(--border);border-radius:20px;text-align:center;">
+                        <button class="btn btn-secondary btn-sm" onclick="addWater()"><i data-feather="droplet"></i> Добавить</button>
+                    </div>
+                    <div class="water-weekly"><h4><i data-feather="calendar"></i> За неделю</h4><div class="water-rings">${ringsHtml}</div></div>
+                </div>
+            `;
+        }
+        
+        // ===== ГРАФИКИ =====
+        function renderCharts(measurements) {
+            if (measurements.length < 2) return;
+            const sorted = [...measurements].sort((a, b) => new Date(a.date) - new Date(b.date));
+            const labels = sorted.map(m => formatDate(m.date));
+            
+            const wCtx = document.getElementById('weightChart');
+            if (wCtx) new Chart(wCtx, { type: 'line', data: { labels, datasets: [{ label: 'Вес (кг)', data: sorted.map(m=>m.weight), borderColor:'#1e5945', backgroundColor:'rgba(30,89,69,0.1)', borderWidth:3, fill:true, tension:0.4, pointBackgroundColor:'#1e5945', pointBorderColor:'white', pointBorderWidth:2, pointRadius:5, pointHoverRadius:8 }] }, options: { responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:false,grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}} } });
+            
+            const mCtx = document.getElementById('measurementsChart');
+            if (mCtx) {
+                const datasets = [];
+                const colors = { chest:'#e74c3c', waist:'#f39c12', hips:'#2196f3' };
+                const names = { chest:'Грудь', waist:'Талия', hips:'Бедра' };
+                ['chest','waist','hips'].forEach(key => {
+                    const data = sorted.map(m=>m[key]||null);
+                    if (data.some(v=>v!==null)) datasets.push({ label:names[key], data, borderColor:colors[key], backgroundColor:'transparent', borderWidth:2, tension:0.4, pointRadius:4, pointHoverRadius:7 });
+                });
+                if (datasets.length) new Chart(mCtx, { type:'line', data:{labels,datasets}, options:{responsive:true,plugins:{legend:{position:'bottom',labels:{usePointStyle:true,padding:20}}},scales:{y:{beginAtZero:false,grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}}} });
+            }
+        }
+        
+        // ===== ШЕРИНГ =====
+        function shareFromProfile(challengeId) {
+            const user = getCurrentUser();
+            const challenges = JSON.parse(localStorage.getItem('challenges') || '[]');
+            const challenge = challenges.find(c => c.id === challengeId);
+            const progress = JSON.parse(localStorage.getItem('progress') || '[]');
+            const up = progress.find(p => p.userId === user.id && p.challengeId === challengeId);
+            if (!up) return;
+            showShareModal(`<i data-feather="zap"></i> Участвую в «${challenge.title}»! Прогресс: ${Math.round((up.checkins.length/challenge.duration)*100)}%`, `${location.origin}${location.pathname.replace('profile.html','')}challenge.html?id=${challengeId}`);
+        }
+        
+        function showShareModal(text, url) {
+            const et = encodeURIComponent(text), eu = encodeURIComponent(url);
+            const overlay = document.createElement('div'); overlay.className = 'share-overlay';
+            overlay.innerHTML = `<div class="share-modal"><div class="share-header"><h3>📤 Поделиться</h3><button class="share-close" onclick="this.closest('.share-overlay').remove()">×</button></div><div class="share-buttons"><a href="https://t.me/share/url?url=${eu}&text=${et}" target="_blank" class="share-btn telegram"><i class="fab fa-telegram-plane"></i> Telegram</a><a href="https://vk.com/share.php?url=${eu}&title=${et}" target="_blank" class="share-btn vk"><i class="fab fa-vk"></i> VK</a><a href="https://wa.me/?text=${et}%20${eu}" target="_blank" class="share-btn whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a><button class="share-btn copy" onclick="navigator.clipboard.writeText('${text} ${url}').then(()=>alert('✅ Скопировано!'))"><i class="far fa-copy"></i> Копировать</button></div></div>`;
+            document.body.appendChild(overlay);
+            overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+        }
+        
+        // ===== КБЖУ =====
+        function calculateCalories() {
+            const user = getCurrentUser();
+            const gender = document.getElementById('calcGender').value;
+            const age = parseInt(document.getElementById('calcAge').value);
+            const weight = parseFloat(document.getElementById('calcWeight').value);
+            const height = parseInt(document.getElementById('calcHeight').value);
+            const activity = parseFloat(document.getElementById('calcActivity').value);
+            const goal = document.getElementById('calcGoal').value;
+            if (!age || !weight || !height) { alert('Заполните все поля!'); return; }
+            let bmr = gender === 'female' ? 10*weight + 6.25*height - 5*age - 161 : 10*weight + 6.25*height - 5*age + 5;
+            let tdee = bmr * activity;
+            if (goal === 'lose') tdee *= 0.8; else if (goal === 'gain') tdee *= 1.15;
+            const protein = Math.round(weight*2), fat = Math.round(weight*1), carbs = Math.round((tdee - protein*4 - fat*9)/4);
+            const savedData = JSON.parse(localStorage.getItem('userCalorieData') || '{}');
+            savedData[user.id] = { gender, age, weight, height, activity:activity.toString(), goal, calories:Math.round(tdee), protein, fat, carbs };
+            localStorage.setItem('userCalorieData', JSON.stringify(savedData));
+            document.getElementById('calcResults').style.display = 'block';
+            document.getElementById('calcResults').innerHTML = `<h3><i data-feather="target"></i> Дневная норма</h3><div class="calorie-stats"><div class="calorie-stat"><div class="calorie-value">${Math.round(tdee)}</div><div class="calorie-label">Калории</div></div><div class="calorie-stat"><div class="calorie-value">${protein}г</div><div class="calorie-label">Белки</div></div><div class="calorie-stat"><div class="calorie-value">${fat}г</div><div class="calorie-label">Жиры</div></div><div class="calorie-stat"><div class="calorie-value">${carbs}г</div><div class="calorie-label">Углеводы</div></div></div>`;
+        }
+        
+        function renderCaloriesTab() {
+            const user = getCurrentUser();
+            const sd = JSON.parse(localStorage.getItem('userCalorieData') || '{}');
+            const d = sd[user.id] || {};
+            return `<div class="calorie-calculator"><h3><i data-feather="bar-chart-2"></i> КБЖУ</h3><p style="color:var(--gray);margin-bottom:25px;">Рассчитайте дневную норму</p><div class="calc-form"><div class="form-row"><div class="form-group"><label>Пол</label><select id="calcGender"><option value="female" ${d.gender==='female'?'selected':''}>Женский</option><option value="male" ${d.gender==='male'?'selected':''}>Мужской</option></select></div><div class="form-group"><label>Возраст</label><input type="number" id="calcAge" value="${d.age||25}"></div><div class="form-group"><label>Вес</label><input type="number" id="calcWeight" value="${d.weight||70}" step="0.1"></div><div class="form-group"><label>Рост</label><input type="number" id="calcHeight" value="${d.height||170}"></div></div><div class="form-group"><label>Активность</label><select id="calcActivity"><option value="1.2" ${d.activity==='1.2'?'selected':''}>Сидячий</option><option value="1.375" ${!d.activity||d.activity==='1.375'?'selected':''}>Лёгкая</option><option value="1.55" ${d.activity==='1.55'?'selected':''}>Умеренная</option><option value="1.725" ${d.activity==='1.725'?'selected':''}>Высокая</option><option value="1.9" ${d.activity==='1.9'?'selected':''}>Экстремальная</option></select></div><div class="form-group"><label>Цель</label><select id="calcGoal"><option value="lose" ${d.goal==='lose'?'selected':''}>Похудение</option><option value="maintain" ${!d.goal||d.goal==='maintain'?'selected':''}>Поддержание</option><option value="gain" ${d.goal==='gain'?'selected':''}>Набор</option></select></div><button class="btn btn-primary" onclick="calculateCalories()">🧮 Рассчитать</button></div><div class="calc-results" id="calcResults" style="display:${d.calories?'block':'none'};margin-top:30px;"></div></div>`;
+        }
+        
+        // ===== ОТРИСОВКА =====
+        function render() {
+            const user = getCurrentUser();
+            if (!user) { location.href = 'login.html'; return; }
+            
+            const challenges = getUserChallenges(user.id);
+            const badges = getUserBadges(user.id);
+            const measurements = getUserMeasurements(user.id);
+            const photos = getUserPhotos(user.id);
+            const active = challenges.filter(c => !c.completed && c.status === 'active');
+            const completed = challenges.filter(c => c.completed);
+            const maxStreak = Math.max(...challenges.map(c => calcStreak(c.checkins)), 0);
+            
+            const parts = [
+                { id: 'face', name: '<i data-feather="user"></i> Лицо' },
+                { id: 'body', name: '<i data-feather="trending-up"></i> Корпус' },
+                { id: 'legs', name: '<i data-feather="activity"></i> Ноги' },
+                { id: 'back', name: '<i data-feather="refresh-cw"></i> Спина' },
+                { id: 'arms', name: '<i data-feather="mouse-pointer"></i> Руки' }
+            ];
+            const cp = photos[currentPart] || { before: null, after: null, beforeDate: null, afterDate: null };
+            
+            document.getElementById('profileContent').innerHTML = `
+                <div class="profile-header">
+                    <div class="profile-avatar">${user.name.charAt(0).toUpperCase()}</div>
+                    <div class="profile-info"><h2>${user.name}</h2><p>${user.email}</p><p class="user-role">${user.role==='admin'?'<i data-feather="star"></i> Администратор':'<i data-feather="trending-up"></i> Участник'}</p></div>
+                </div>
+                <div class="profile-stats">
+                    <div class="stat-card"><div class="stat-value">${challenges.length}</div><div class="stat-label">Всего</div></div>
+                    <div class="stat-card"><div class="stat-value">${active.length}</div><div class="stat-label">Активных</div></div>
+                    <div class="stat-card"><div class="stat-value">${completed.length}</div><div class="stat-label">Завершено</div></div>
+                    <div class="stat-card"><div class="stat-value">${maxStreak}<i data-feather="zap"></i></div><div class="stat-label">Макс. серия</div></div>
+                </div>
+                <div class="photos-section-compact">
+                    <h3><i data-feather="camera"></i> Фото прогресса</h3>
+                    <div class="parts-tabs">${parts.map(p => `<button class="part-tab ${currentPart===p.id?'active':''}" onclick="switchPart('${p.id}')">${p.name}</button>`).join('')}</div>
+                    <div class="photos-compare">
+                        <div class="photo-box">
+                            <div class="photo-box-title"><i data-feather="camera"></i> ДО</div>
+                            <div class="photo-box-preview" onclick="document.getElementById('photo-${currentPart}-before').click()">${cp.before?`<img src="${cp.before}">`:'<span>+</span>'}</div>
+                            ${cp.beforeDate?`<div class="photo-date">${formatDate(cp.beforeDate)}</div>`:''}
+                            <input type="file" id="photo-${currentPart}-before" accept="image/*" style="display:none" onchange="savePhoto('${currentPart}','before')">
+                            <div class="photo-actions"><button class="btn-small" onclick="document.getElementById('photo-${currentPart}-before').click()"><i data-feather="download"></i> Загрузить</button>${cp.before?`<button class="btn-small-delete" onclick="deletePhoto('${currentPart}','before')">🗑️</button>`:''}</div>
+                        </div>
+                        <div class="photo-box">
+                            <div class="photo-box-title"><i data-feather="camera"></i> ПОСЛЕ</div>
+                            <div class="photo-box-preview" onclick="document.getElementById('photo-${currentPart}-after').click()">${cp.after?`<img src="${cp.after}">`:'<span>+</span>'}</div>
+                            ${cp.afterDate?`<div class="photo-date">${formatDate(cp.afterDate)}</div>`:''}
+                            <input type="file" id="photo-${currentPart}-after" accept="image/*" style="display:none" onchange="savePhoto('${currentPart}','after')">
+                            <div class="photo-actions"><button class="btn-small" onclick="document.getElementById('photo-${currentPart}-after').click()"><i data-feather="download"></i> Загрузить</button>${cp.after?`<button class="btn-small-delete" onclick="deletePhoto('${currentPart}','after')">🗑️</button>`:''}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tabs">
+                    <button class="tab active" data-tab="challenges"><i data-feather="award"></i> Челленджи</button>
+                    <button class="tab" data-tab="measurements"><i data-feather="bar-chart-2"></i> Замеры</button>
+                    <button class="tab" data-tab="badges"><i data-feather="shield"></i> Достижения</button>
+                    <button class="tab" data-tab="calories"><i data-feather="bar-chart-2"></i> КБЖУ</button>
+                    <button class="tab" data-tab="water"><i data-feather="droplet"></i> Вода</button>
+                    <button class="tab" data-tab="food"><i data-feather="coffee"></i> Питание</button>
+                </div>
+                <div class="tab-content active" id="tab-challenges">
+                    ${active.length>0?'<h3>🟢 Активные</h3><div class="challenges-list">'+active.map(c=>`<div class="challenge-item"><div class="challenge-info"><strong>${c.title}</strong><span>${c.checkins.length}/${c.duration} (${Math.round(c.checkins.length/c.duration*100)}%)</span></div><div style="display:flex;gap:8px"><button class="btn btn-secondary btn-sm" onclick="shareFromProfile(${c.challengeId})"><i class="fas fa-share-alt"></i></button><a href="challenge.html?id=${c.challengeId}" class="btn btn-secondary btn-sm">Продолжить</a></div></div>`).join('')+'</div>':''}
+                    ${completed.length>0?'<h3 style="margin-top:30px"><i data-feather="check-circle"></i> Завершённые</h3><div class="challenges-list">'+completed.map(c=>`<div class="challenge-item completed"><div class="challenge-info"><strong>${c.title}</strong><span>${c.checkins.length}/${c.duration}</span></div><span class="badge-completed"><i data-feather="award"></i></span></div>`).join('')+'</div>':''}
+                    ${challenges.length===0?'<p class="empty-message">Нет челленджей.<br><br><a href="challenges.html" class="btn btn-primary">Выбрать</a></p>':''}
+                </div>
+                <div class="tab-content" id="tab-measurements">
+                    ${renderMeasurementsTab(measurements)}
+                </div>
+                <div class="tab-content" id="tab-badges">
+                    ${badges.length?`<div class="badges-grid">${badges.map(b=>`<div class="badge-card"><div class="badge-icon">${b.type==='7days'?'🔥':b.type==='completed'?'🏆':b.type==='first'?'🌟':b.type==='perfect'?'🎯':b.type==='athlete'?'💪':'🏅'}</div><div class="badge-name">${b.name}</div><div class="badge-desc">${b.description}</div><div class="badge-date">${formatDate(b.date)}</div></div>`).join('')}</div>`:'<p class="empty-message">Нет достижений.</p>'}
+                </div>
+                <div class="tab-content" id="tab-calories">${renderCaloriesTab()}</div>
+                <div class="tab-content" id="tab-water">${renderWaterTab()}</div>
+                <div class="tab-content" id="tab-food">${renderFoodTab()}</div>
+            `;
+            
+            document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('tab-'+this.dataset.tab).classList.add('active');
+            }));
+            
+            setTimeout(() => {
+                feather.replace();
+                const sorted = [...measurements].sort((a,b) => new Date(a.date) - new Date(b.date));
+                if (sorted.length >= 2) renderCharts(sorted);
+            }, 200);
+        }
+        
+        function renderMeasurementsTab(measurements) {
+            let html = `<div class="measurement-form"><h3>Добавить замеры</h3><div class="form-row"><div class="form-group"><label>Вес (кг)*</label><input id="weight" type="number" step="1" min="1" placeholder="70"></div><div class="form-group"><label>Грудь (см)</label><input id="chest" type="number" step="1" min="1" placeholder="90"></div><div class="form-group"><label>Талия (см)</label><input id="waist" type="number" step="1" min="1" placeholder="75"></div><div class="form-group"><label>Бедра (см)</label><input id="hips" type="number" step="1" min="1" placeholder="95"></div></div><button class="btn btn-primary" onclick="addMeasurement()">💾 Сохранить</button></div>`;
+            if (!measurements.length) { html += '<p class="empty-message">Нет замеров.</p>'; }
+            else {
+                html += `<div class="chart-container"><h3><i data-feather="bar-chart-2"></i> Вес</h3><canvas id="weightChart"></canvas></div><div class="chart-container" style="margin-top:30px"><h3>📊 Объёмы</h3><canvas id="measurementsChart"></canvas></div><h3 style="margin-top:30px">История</h3><div class="table-container"><table><thead><tr><th>Дата</th><th>Вес</th><th>Грудь</th><th>Талия</th><th>Бедра</th><th></th></tr></thead><tbody>${measurements.map(m=>`<tr><td>${formatDate(m.date)}</td><td>${m.weight} кг</td><td>${m.chest||'—'} см</td><td>${m.waist||'—'} см</td><td>${m.hips||'—'} см</td><td><button class="btn-icon" onclick="deleteMeasurement(${m.id})">🗑️</button></td></tr>`).join('')}</tbody></table></div><button class="btn btn-secondary" onclick="exportMeasurements()" style="margin-top:20px;width:100%;"><i class="fas fa-download"></i> Скачать CSV</button>`;
+            }
+            return html;
+        }
+        
+        function logout() { localStorage.removeItem('currentUser'); location.href = 'index.html'; }
+        
+        function initTheme() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-theme');
+                document.querySelector('#themeToggle i').className = 'fas fa-sun';
+            }
+        }
+        
+        function toggleTheme() {
+            const isDark = document.body.classList.toggle('dark-theme');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.querySelector('#themeToggle i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const u = getCurrentUser();
+            if (!u) { location.href = 'login.html'; return; }
+            if (u.role === 'admin') document.getElementById('adminLink').style.display = 'inline';
+            initTheme();
+            render();
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            document.getElementById('adminLink')?.addEventListener('click', e => { e.preventDefault(); location.href = 'admin.html'; });
+            document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
+        });
+    </script>
+</body>
+</html>

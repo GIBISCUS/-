@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Челленджи — FitChallenge</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+     <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">Fit<span>Challenge</span></a>
+            <nav class="nav">
+                <a href="index.html">Главная</a>
+                <a href="challenges.html" class="active">Челленджи</a>
+                <a href="about.html">О проекте</a>
+                <a href="rating.html">Рейтинг</a>
+                <a href="tips.html">Советы</a>
+                <a href="about.html">О проекте</a>
+                <a href="#" id="profileLink" style="display: none;">Профиль</a>
+                <a href="#" id="adminLink" style="display: none;">Админ</a>
+                <a href="register.html" id="registerLink">Регистрация</a>
+                <a href="login.html" id="loginLink">Войти</a>
+                <button id="logoutBtn" class="logout-btn" style="display: none;">Выйти</button>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <section class="challenges-page">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">Выбери свой вызов</span>
+                    <h2>Все челленджи</h2>
+                    <p>Найди то, что подходит именно тебе</p>
+                </div>
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Поиск по названию...">
+                </div>
+                <div class="category-bar">
+                    <button class="category-btn active" data-category="all">Все</button>
+                    <button class="category-btn" data-category="strength">💪 Сила</button>
+                    <button class="category-btn" data-category="cardio">🏃 Кардио</button>
+                    <button class="category-btn" data-category="health">🥗 ЗОЖ</button>
+                    <button class="category-btn" data-category="mind">🧠 Привычки</button>
+                </div>
+                <div class="filter-bar-new">
+                    <button class="filter-btn-new active" data-filter="all">Все</button>
+                    <button class="filter-btn-new" data-filter="active">Активные</button>
+                    <button class="filter-btn-new" data-filter="finished">Завершенные</button>
+                </div>
+                <div class="challenges-grid-full" id="challengesGrid"></div>
+                <div id="noChallengesMessage" class="empty-message" style="display: none;">
+                    <p>Челленджей не найдено</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="footer-new">
+        <div class="container"><div class="footer-bottom"><p>&copy; 2026 FitChallenge</p></div></div>
+    </footer>
+    <script src="js/challenges.js"></script>
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html>

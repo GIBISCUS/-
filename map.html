@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Спортплощадки — FitChallenge</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        #map { width: 100%; height: 450px; margin-bottom: 40px; border-radius: 20px; overflow: hidden; }
+        .spots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        .spot-card {
+            background: white;
+            border-radius: 14px;
+            padding: 22px;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s;
+            box-shadow: var(--shadow-sm);
+        }
+        .spot-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+        .spot-card h4 { margin-bottom: 5px; }
+        .spot-card p { color: var(--gray); font-size: 14px; margin-bottom: 8px; }
+        .spot-tags { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+        .spot-tag {
+            background: rgba(30,89,69,0.1);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .spot-rating { color: #f39c12; font-weight: 600; }
+        body.dark-theme .spot-card { background: #1e1e1e; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">Fit<span>Challenge</span></a>
+            <nav class="nav">
+                <a href="index.html">Главная</a>
+                <a href="challenges.html">Челленджи</a>
+                <a href="rating.html">Рейтинг</a>
+                <a href="tips.html">Советы</a>
+                <a href="map.html" class="active">Площадки</a>
+                <a href="about.html">О проекте</a>
+                <a href="#" id="profileLink" style="display: none;">Профиль</a>
+                <a href="#" id="adminLink" style="display: none;">Админ</a>
+                <a href="register.html" id="registerLink">Регистрация</a>
+                <a href="login.html" id="loginLink">Войти</a>
+                <button id="logoutBtn" class="logout-btn" style="display: none;">Выйти</button>
+                <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="map-section">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">📍 Карта</span>
+                    <h2>Спортивные площадки</h2>
+                    <p>Найдите ближайшее место для тренировки</p>
+                </div>
+            </div>
+            
+            <!-- Карта -->
+            <div id="map"></div>
+            
+            <div class="container" style="margin-top: 40px;">
+                <!-- Список площадок -->
+                <div class="spots-grid" id="spotsList"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer-new">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand"><a href="index.html" class="footer-logo">Fit<span>Challenge</span></a><p>Платформа для лучшей версии себя</p></div>
+                <div class="footer-links">
+                    <a href="index.html">Главная</a>
+                    <a href="challenges.html">Челленджи</a>
+                    <a href="rating.html">Рейтинг</a>
+                    <a href="tips.html">Советы</a>
+                    <a href="map.html">Площадки</a>
+                    <a href="about.html">О проекте</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-telegram"></i></a>
+                    <a href="#"><i class="fab fa-vk"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-bottom"><p>&copy; 2026 FitChallenge</p></div>
+        </div>
+    </footer>
+
+    <script>
+        // Данные площадок
+        const spots = [
+            { name: 'Воркаут-зона в парке Горького', address: 'Парк Горького, центральный вход', type: ['Воркаут', 'Турники', 'Брусья'], rating: 4.8, coords: [55.7298, 37.6014] },
+            { name: 'Спортплощадка на ВДНХ', address: 'ВДНХ, за павильоном 27', type: ['Бег', 'Воркаут', 'Растяжка'], rating: 4.6, coords: [55.8235, 37.6238] },
+            { name: 'Турники у МГУ', address: 'Ул. Академика Хохлова, д. 1', type: ['Турники', 'Брусья', 'Воркаут'], rating: 4.7, coords: [55.7025, 37.5305] },
+            { name: 'Беговая дорожка в Сокольниках', address: 'Парк Сокольники, главная аллея', type: ['Бег', 'Ходьба', 'Кардио'], rating: 4.9, coords: [55.7935, 37.6728] },
+            { name: 'Йога-площадка в Нескучном саду', address: 'Нескучный сад, у пруда', type: ['Йога', 'Растяжка', 'Медитация'], rating: 4.5, coords: [55.7185, 37.5888] },
+            { name: 'Спорткомплекс Лужники', address: 'Лужнецкая наб., 24', type: ['Бег', 'Воркаут', 'Кардио'], rating: 4.9, coords: [55.7158, 37.5544] },
+            { name: 'Уличные тренажёры в Измайлово', address: 'Измайловский парк, около стадиона', type: ['Тренажёры', 'Воркаут'], rating: 4.4, coords: [55.7887, 37.7712] },
+            { name: 'Скейт-парк в Филях', address: 'Парк Фили, у набережной', type: ['Скейт', 'Воркаут', 'Бег'], rating: 4.3, coords: [55.7524, 37.4986] }
+        ];
+
+        // Яндекс.Карта
+        ymaps.ready(function() {
+            const map = new ymaps.Map('map', {
+                center: [55.7512, 37.6184],
+                zoom: 11,
+                controls: ['zoomControl', 'fullscreenControl']
+            });
+
+            spots.forEach(s => {
+                const placemark = new ymaps.Placemark(s.coords, {
+                    hintContent: s.name,
+                    balloonContent: `<strong>${s.name}</strong><br>${s.address}<br>⭐ ${s.rating}`
+                }, {
+                    preset: 'islands#greenSportIcon'
+                });
+                map.geoObjects.add(placemark);
+            });
+        });
+
+        // Список площадок
+        document.getElementById('spotsList').innerHTML = spots.map(s => `
+            <div class="spot-card">
+                <h4>${s.name}</h4>
+                <p>📍 ${s.address}</p>
+                <div class="spot-tags">
+                    ${s.type.map(t => `<span class="spot-tag">${t}</span>`).join('')}
+                </div>
+                <span class="spot-rating">⭐ ${s.rating}</span>
+            </div>
+        `).join('');
+
+        // Навигация
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        if (user) {
+            document.getElementById('profileLink').style.display = 'inline';
+            if (user.role === 'admin') document.getElementById('adminLink').style.display = 'inline';
+            document.getElementById('registerLink').style.display = 'none';
+            document.getElementById('loginLink').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'inline';
+        }
+        document.getElementById('logoutBtn')?.addEventListener('click', () => { 
+            localStorage.removeItem('currentUser'); 
+            location.href = 'index.html'; 
+        });
+        document.getElementById('profileLink')?.addEventListener('click', e => { 
+            e.preventDefault(); 
+            location.href = 'profile.html'; 
+        });
+        document.getElementById('adminLink')?.addEventListener('click', e => { 
+            e.preventDefault(); 
+            location.href = 'admin.html'; 
+        });
+
+        // Тема
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-theme');
+            document.querySelector('#themeToggle i').className = 'fas fa-sun';
+        }
+        document.getElementById('themeToggle')?.addEventListener('click', () => {
+            const isDark = document.body.classList.toggle('dark-theme');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.querySelector('#themeToggle i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+        });
+    </script>
+</body>
+</html>

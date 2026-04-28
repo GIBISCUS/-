@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рейтинг — FitChallenge</title>
+    
+    <!-- Шрифты -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+     <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">Fit<span>Challenge</span></a>
+            <nav class="nav">
+                <a href="index.html">Главная</a>
+                <a href="challenges.html">Челленджи</a>
+                <a href="map.html">Площадки</a>
+                <a href="rating.html" class="active">Рейтинг</a>
+                <a href="tips.html">Советы</a>
+                <a href="about.html">О проекте</a>
+                <a href="#" id="profileLink">Профиль</a>
+                <a href="#" id="adminLink" style="display: none;">Админ</a>
+                <a href="register.html" id="registerLink" style="display: none;">Регистрация</a>
+                <a href="login.html" id="loginLink" style="display: none;">Войти</a>
+                <button id="logoutBtn" class="logout-btn">Выйти</button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="rating-page">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">🏆 Лидеры</span>
+                    <h2>Рейтинг участников</h2>
+                    <p>Самые целеустремлённые участники платформы</p>
+                </div>
+                
+                <!-- Топ-3 -->
+                <div class="top-three" id="topThree"></div>
+                
+                <!-- Полная таблица -->
+                <div class="rating-table-container">
+                    <table class="rating-table" id="ratingTable">
+                        <thead>
+                            <tr>
+                                <th>Место</th>
+                                <th>Участник</th>
+                                <th>Завершено</th>
+                                <th>Активных</th>
+                                <th>Макс. серия</th>
+                                <th>Достижений</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ratingBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer-new">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 FitChallenge. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function getCurrentUser() {
+            const saved = localStorage.getItem('currentUser');
+            return saved ? JSON.parse(saved) : null;
+        }
+        
+        function getAllUsers() {
+            return JSON.parse(localStorage.getItem('users') || '[]');
+        }
+        
+        function getUserStats() {
+            const users = getAllUsers();
+            const progress = JSON.parse(localStorage.getItem('progress') || '[]');
+            const badges = JSON.parse(localStorage.getItem('badges') || '[]');
+            const challenges = JSON.parse(localStorage.getItem('challenges') || '[]');
+            
+            return users.map(user => {
+                const userProgress = progress.filter(p => p.userId === user.id);
+                const userBadges = badges.filter(b => b.userId === user.id);
+                
+                // Завершённые челленджи
+                const completed = userProgress.filter(p => p.completed).length;
+                
+                // Активные челленджи
+                const active = userProgress.filter(p => !p.completed).filter(p => {
+                    const challenge = challenges.find(c => c.id === p.challengeId);
+                    return challenge && challenge.status === 'active';
+                }).length;
+                
+                // Максимальная серия
+                const maxStreak = Math.max(...userProgress.map(p => {
+                    if (!p.checkins.length) return 0;
+                    const sorted = [...p.checkins].sort((a, b) => b - a);
+                    let streak = 1;
+                    for (let i = 0; i < sorted.length - 1; i++) {
+                        if (sorted[i] - sorted[i + 1] === 1) streak++;
+                        else break;
+                    }
+                    return streak;
+                }), 0);
+                
+                return {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    completed,
+                    active,
+                    maxStreak,
+                    badges: userBadges.length,
+                    score: completed * 100 + maxStreak * 10 + userBadges.length * 20
+                };
+            }).sort((a, b) => b.score - a.score);
+        }
+        
+        function renderRating() {
+            const stats = getUserStats();
+            const topThree = document.getElementById('topThree');
+            const ratingBody = document.getElementById('ratingBody');
+            
+            // Топ-3
+            if (stats.length >= 3) {
+                topThree.innerHTML = `
+                    <div class="top-card top-2">
+                        <div class="top-medal">🥈</div>
+                        <div class="top-avatar">${stats[1].name.charAt(0)}</div>
+                        <div class="top-name">${stats[1].name}</div>
+                        <div class="top-score">${stats[1].completed} 🏆</div>
+                    </div>
+                    <div class="top-card top-1">
+                        <div class="top-medal">🥇</div>
+                        <div class="top-avatar">${stats[0].name.charAt(0)}</div>
+                        <div class="top-name">${stats[0].name}</div>
+                        <div class="top-score">${stats[0].completed} 🏆</div>
+                    </div>
+                    <div class="top-card top-3">
+                        <div class="top-medal">🥉</div>
+                        <div class="top-avatar">${stats[2].name.charAt(0)}</div>
+                        <div class="top-name">${stats[2].name}</div>
+                        <div class="top-score">${stats[2].completed} 🏆</div>
+                    </div>
+                `;
+            }
+            
+            // Таблица
+            ratingBody.innerHTML = stats.map((user, index) => {
+                let medal = '';
+                if (index === 0) medal = '🥇';
+                else if (index === 1) medal = '🥈';
+                else if (index === 2) medal = '🥉';
+                
+                const isCurrentUser = getCurrentUser()?.id === user.id;
+                
+                return `
+                    <tr class="${isCurrentUser ? 'current-user' : ''}">
+                        <td class="rating-position">${medal || index + 1}</td>
+                        <td class="rating-user">
+                            <span class="rating-avatar">${user.name.charAt(0)}</span>
+                            ${user.name}
+                            ${user.role === 'admin' ? '<span class="admin-badge">Админ</span>' : ''}
+                            ${isCurrentUser ? '<span class="you-badge">Вы</span>' : ''}
+                        </td>
+                        <td>${user.completed}</td>
+                        <td>${user.active}</td>
+                        <td>${user.maxStreak} 🔥</td>
+                        <td>${user.badges} 🎖️</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function updateNav() {
+            const user = getCurrentUser();
+            const adminLink = document.getElementById('adminLink');
+            const registerLink = document.getElementById('registerLink');
+            const loginLink = document.getElementById('loginLink');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const profileLink = document.getElementById('profileLink');
+            
+            if (user) {
+                if (profileLink) profileLink.style.display = 'inline';
+                if (user.role === 'admin' && adminLink) adminLink.style.display = 'inline';
+                if (registerLink) registerLink.style.display = 'none';
+                if (loginLink) loginLink.style.display = 'none';
+                if (logoutBtn) logoutBtn.style.display = 'inline';
+            } else {
+                if (profileLink) profileLink.style.display = 'none';
+                if (adminLink) adminLink.style.display = 'none';
+                if (registerLink) registerLink.style.display = 'inline';
+                if (loginLink) loginLink.style.display = 'inline';
+                if (logoutBtn) logoutBtn.style.display = 'none';
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            updateNav();
+            renderRating();
+            
+            document.getElementById('logoutBtn')?.addEventListener('click', logout);
+            document.getElementById('profileLink')?.addEventListener('click', e => {
+                e.preventDefault();
+                window.location.href = 'profile.html';
+            });
+            document.getElementById('adminLink')?.addEventListener('click', e => {
+                e.preventDefault();
+                window.location.href = 'admin.html';
+            });
+        });
+    </script>
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html>

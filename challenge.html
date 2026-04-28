@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Челлендж — FitChallenge</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">  
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">Fit<span>Challenge</span></a>
+            <nav class="nav">
+                <a href="index.html">Главная</a>
+                <a href="challenges.html">Челленджи</a>
+                <a href="about.html">О проекте</a>
+                <a href="rating.html">Рейтинг</a>
+                <a href="tips.html">Советы</a>
+                <a href="about.html">О проекте</a>
+                <a href="#" id="profileLink" style="display: none;">Профиль</a>
+                <a href="#" id="adminLink" style="display: none;">Админ</a>
+                <a href="register.html" id="registerLink">Регистрация</a>
+                <a href="login.html" id="loginLink">Войти</a>
+                <button id="logoutBtn" class="logout-btn" style="display: none;">Выйти</button>
+                <button class="theme-toggle" id="themeToggle" title="Переключить тему"><i class="fas fa-moon"></i></button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div id="challengeContainer">Загрузка...</div>
+        </div>
+    </main>
+
+    <footer class="footer-new">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 FitChallenge. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        console.log('=== CHALLENGE PAGE ===');
+        
+        function getCurrentUser() { const s = localStorage.getItem('currentUser'); return s ? JSON.parse(s) : null; }
+        function getChallengeId() { return parseInt(new URLSearchParams(window.location.search).get('id')); }
+        function getChallenge(id) { return JSON.parse(localStorage.getItem('challenges')||'[]').find(c => c.id === id); }
+        function getUserProgress(uid, cid) { return JSON.parse(localStorage.getItem('progress')||'[]').find(p => p.userId === uid && p.challengeId === cid); }
+        function formatDate(d) { return d ? new Date(d).toLocaleDateString('ru-RU') : ''; }
+        function getDaysSince(sd) { const s = new Date(sd), t = new Date(); s.setHours(0,0,0,0); t.setHours(0,0,0,0); return Math.max(0, Math.floor((t-s)/(1000*60*60*24))); }
+        function isDayChecked(p, i) { return p && p.checkins.includes(i); }
+        function calcStreak(c) { if(!c||!c.length) return 0; const s=[...c].sort((a,b)=>b-a); let st=1; for(let i=0;i<s.length-1;i++){if(s[i]-s[i+1]===1)st++;else break;} return st; }
+        function getParticipantsCount(cid) { const p=JSON.parse(localStorage.getItem('progress')||'[]'); return new Set(p.filter(x=>x.challengeId===cid).map(x=>x.userId)).size; }
+
+        // ===== УЧАСТНИКИ =====
+        function renderParticipants(cid) {
+            const cont = document.getElementById('participantsList');
+            if (!cont) return;
+            
+            const progress = JSON.parse(localStorage.getItem('progress') || '[]');
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            const participants = progress
+                .filter(p => p.challengeId === cid)
+                .map(p => {
+                    const user = users.find(u => u.id === p.userId);
+                    const st = calcStreak(p.checkins);
+                    return {
+                        name: user?.name || 'Неизвестный',
+                        checkins: p.checkins?.length || 0,
+                        streak: st,
+                        completed: p.completed
+                    };
+                })
+                .sort((a, b) => b.checkins - a.checkins);
+            
+            if (!participants.length) {
+                cont.innerHTML = '<p style="color:var(--gray);text-align:center;padding:15px;">Пока никто не присоединился</p>';
+                return;
+            }
+            
+            cont.innerHTML = participants.map((p, i) => {
+                const medals = ['🥇','🥈','🥉'];
+                return `
+                    <div class="participant-row">
+                        <span class="participant-pos">${medals[i] || i+1}</span>
+                        <span class="participant-avatar">${p.name.charAt(0).toUpperCase()}</span>
+                        <span class="participant-name">${p.name}</span>
+                        <span class="participant-stats">${p.checkins} дн. · ${p.streak}🔥</span>
+                        ${p.completed ? '<span class="participant-done">✅</span>' : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ===== КОММЕНТАРИИ =====
+        function getComments(cid) { return JSON.parse(localStorage.getItem('comments')||'[]').filter(c=>c.challengeId===cid).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)); }
+        
+        function addComment(cid) {
+            const u = getCurrentUser(); if(!u){location.href='login.html';return;}
+            const t = document.getElementById('commentText')?.value.trim(); if(!t){alert('Введите текст');return;}
+            const comments = JSON.parse(localStorage.getItem('comments')||'[]');
+            comments.push({id:Date.now(),challengeId:cid,userId:u.id,userName:u.name,text:t,likes:[],createdAt:new Date().toISOString()});
+            localStorage.setItem('comments',JSON.stringify(comments));
+            document.getElementById('commentText').value='';
+            renderComments(cid);
+        }
+        
+        function deleteComment(id) { if(!confirm('Удалить?'))return; const c=JSON.parse(localStorage.getItem('comments')||'[]'); localStorage.setItem('comments',JSON.stringify(c.filter(x=>x.id!==id))); renderComments(getChallengeId()); }
+        
+        function likeComment(id) {
+            const u=getCurrentUser(); if(!u){location.href='login.html';return;}
+            const c=JSON.parse(localStorage.getItem('comments')||'[]'); const com=c.find(x=>x.id===id);
+            if(!com.likes)com.likes=[]; const idx=com.likes.indexOf(u.id);
+            if(idx===-1)com.likes.push(u.id); else com.likes.splice(idx,1);
+            localStorage.setItem('comments',JSON.stringify(c)); renderComments(getChallengeId());
+        }
+        
+        function renderComments(cid) {
+            const cont=document.getElementById('commentsList'); if(!cont)return;
+            const comments=getComments(cid); const u=getCurrentUser();
+            if(!comments.length){cont.innerHTML='<p class="no-comments">Пока нет комментариев. Будьте первым!</p>';return;}
+            cont.innerHTML=comments.map(c=>{
+                const isAuthor=u&&(u.id===c.userId||u.role==='admin');
+                const isLiked=u&&c.likes&&c.likes.includes(u.id);
+                const likes=c.likes?c.likes.length:0;
+                const date=new Date(c.createdAt).toLocaleDateString('ru-RU',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
+                return `<div class="comment-item"><div class="comment-avatar">${c.userName.charAt(0).toUpperCase()}</div><div class="comment-content"><div class="comment-header"><span class="comment-author">${c.userName}</span><span class="comment-date">${date}</span></div><div class="comment-text">${c.text.replace(/\n/g,'<br>')}</div><div class="comment-actions"><button class="like-btn ${isLiked?'liked':''}" onclick="likeComment(${c.id})"><i class="far fa-heart"></i> <span>${likes}</span></button>${isAuthor?`<button class="comment-delete" onclick="deleteComment(${c.id})"><i class="fas fa-trash"></i></button>`:''}</div></div></div>`;
+            }).join('');
+        }
+
+        // ===== ДЕЙСТВИЯ =====
+        function joinChallenge(cid) {
+            const u=getCurrentUser(); if(!u){location.href='login.html';return;}
+            const ch=JSON.parse(localStorage.getItem('challenges')||'[]'); const challenge=ch.find(c=>c.id===cid);
+            const p=JSON.parse(localStorage.getItem('progress')||'[]');
+            if(p.find(x=>x.userId===u.id&&x.challengeId===cid)){renderChallenge();return;}
+            p.push({id:Date.now(),userId:u.id,challengeId:cid,startDate:new Date().toISOString(),checkins:[],completed:false});
+            localStorage.setItem('progress',JSON.stringify(p));
+            alert(`✅ Вы присоединились к «${challenge?.title||'челленджу'}»!`);
+            renderChallenge();
+        }
+
+        function checkDay(cid,di) {
+            const u=getCurrentUser(); if(!u){location.href='login.html';return;}
+            const pd=JSON.parse(localStorage.getItem('progress')||'[]'); let up=pd.find(p=>p.userId===u.id&&p.challengeId===cid);
+            if(!up){alert('Вы не присоединены');return;}
+            if(up.checkins.includes(di)){alert('День уже отмечен!');return;}
+            const ch=getChallenge(cid); if(di>getDaysSince(up.startDate)){alert('Нельзя отметить будущий день!');return;}
+            up.checkins.push(di); if(ch&&up.checkins.length===ch.duration)up.completed=true;
+            localStorage.setItem('progress',JSON.stringify(pd)); renderChallenge();
+        }
+
+        function leaveChallenge(cid) {
+            if(!confirm('Покинуть челлендж? Прогресс будет потерян.'))return;
+            const u=getCurrentUser(); const p=JSON.parse(localStorage.getItem('progress')||'[]');
+            localStorage.setItem('progress',JSON.stringify(p.filter(x=>!(x.userId===u.id&&x.challengeId===cid))));
+            location.href='challenges.html';
+        }
+
+        // ===== ОТРИСОВКА =====
+        function renderChallenge() {
+            const cont=document.getElementById('challengeContainer');
+            const cid=getChallengeId(); const challenge=getChallenge(cid); const u=getCurrentUser();
+            if(!challenge){cont.innerHTML='<div class="empty-message"><p>Челлендж не найден</p><a href="challenges.html" class="btn btn-primary">← К списку</a></div>';return;}
+            const up=u?getUserProgress(u.id,cid):null;
+            
+            const participantsBlock = `
+                <div class="participants-section" style="margin-top:30px">
+                    <h3><i class="fas fa-users"></i> Участники (${getParticipantsCount(cid)})</h3>
+                    <div id="participantsList"></div>
+                </div>
+            `;
+            
+            if(!up){
+                cont.innerHTML=`<div class="challenge-detail-new"><a href="challenges.html" class="back-link"><i class="fas fa-arrow-left"></i> Назад</a>${challenge.image?`<div class="challenge-hero-image" style="background-image:url('${challenge.image}')"></div>`:''}<div class="challenge-header"><span class="section-tag">${challenge.duration} дней</span><h2>${challenge.title}</h2><p>${challenge.description}</p></div><div class="challenge-rules-new"><h3><i class="fas fa-list-check"></i> Правила</h3><p>${challenge.rules}</p></div><div class="challenge-meta-new"><span><i class="far fa-user"></i> ${getParticipantsCount(cid)} участников</span></div>${challenge.status==='active'?`<button class="btn btn-primary" onclick="joinChallenge(${cid})"><i class="fas fa-play"></i> Присоединиться</button>`:`<button class="btn btn-secondary" disabled>Завершен</button>`}${participantsBlock}<div class="comments-section" style="margin-top:30px"><h3><i class="far fa-comments"></i> Комментарии</h3><div class="comments-list" id="commentsList"></div>${u?`<div class="comment-form"><textarea id="commentText" placeholder="Напишите..." rows="2"></textarea><button class="btn btn-primary" onclick="addComment(${cid})">Отправить</button></div>`:'<p class="comment-login-hint"><a href="login.html">Войдите</a>, чтобы комментировать</p>'}</div></div>`;
+                renderComments(cid); renderParticipants(cid); return;
+            }
+            
+            const ds=getDaysSince(up.startDate); const pct=Math.round((up.checkins.length/challenge.duration)*100);
+            const cd=up.checkins.length; const streak=calcStreak(up.checkins);
+            let cal='<div class="calendar-grid-new">';
+            for(let i=0;i<challenge.duration;i++){const ck=isDayChecked(up,i);const it=i===ds;const ip=i<=ds;let cls='calendar-day-new';if(ck)cls+=' completed';else if(ip)cls+=' missed';if(it)cls+=' today';const oc=(ip&&!ck)?`onclick="checkDay(${cid},${i})"`:'';cal+=`<div class="${cls}" ${oc}>${i+1}</div>`;}
+            cal+='</div>';
+            
+            cont.innerHTML=`<div class="challenge-detail-new"><a href="challenges.html" class="back-link"><i class="fas fa-arrow-left"></i> Назад</a>${challenge.image?`<div class="challenge-hero-image" style="background-image:url('${challenge.image}')"></div>`:''}<div class="challenge-header"><span class="section-tag">${challenge.duration} дней</span><h2>${challenge.title}</h2></div><div class="progress-stats-new"><div class="progress-stat"><div class="progress-stat-value">${pct}%</div><div class="progress-stat-label">Прогресс</div></div><div class="progress-stat"><div class="progress-stat-value">${cd}/${challenge.duration}</div><div class="progress-stat-label">Дней</div></div><div class="progress-stat"><div class="progress-stat-value">${streak} 🔥</div><div class="progress-stat-label">Серия</div></div></div><div class="progress-bar-new"><div class="progress-fill-new" style="width:${pct}%"></div></div><div class="calendar-section-new"><h3><i class="far fa-calendar-alt"></i> Календарь</h3>${cal}<p class="calendar-hint"><i class="fas fa-info-circle"></i> Нажми на прошедший день</p></div><div class="challenge-actions-new">${challenge.status==='active'&&!isDayChecked(up,ds)?`<button class="btn btn-primary" onclick="checkDay(${cid},${ds})"><i class="fas fa-check"></i> Отметить сегодня</button>`:''}<button class="btn btn-danger" onclick="leaveChallenge(${cid})"><i class="fas fa-sign-out-alt"></i> Покинуть</button></div><div class="challenge-info-new"><p><i class="far fa-calendar-check"></i> Начат: ${formatDate(up.startDate)}</p><p><i class="fas fa-list-check"></i> ${challenge.rules}</p></div>${participantsBlock}<div class="comments-section" style="margin-top:30px"><h3><i class="far fa-comments"></i> Комментарии</h3><div class="comments-list" id="commentsList"></div>${u?`<div class="comment-form"><textarea id="commentText" placeholder="Напишите..." rows="2"></textarea><button class="btn btn-primary" onclick="addComment(${cid})">Отправить</button></div>`:''}</div></div>`;
+            renderComments(cid); renderParticipants(cid);
+        }
+
+        // ===== НАВИГАЦИЯ =====
+        function updateNav() {
+            const u=getCurrentUser();
+            if(u){document.getElementById('profileLink').style.display='inline';if(u.role==='admin')document.getElementById('adminLink').style.display='inline';document.getElementById('registerLink').style.display='none';document.getElementById('loginLink').style.display='none';document.getElementById('logoutBtn').style.display='inline';}
+        }
+
+        function logout(){localStorage.removeItem('currentUser');location.href='index.html';}
+
+        document.addEventListener('DOMContentLoaded',()=>{
+            updateNav(); renderChallenge();
+            if(localStorage.getItem('theme')==='dark'){document.body.classList.add('dark-theme');document.querySelector('#themeToggle i').className='fas fa-sun';}
+            document.getElementById('logoutBtn')?.addEventListener('click',logout);
+            document.getElementById('profileLink')?.addEventListener('click',e=>{e.preventDefault();location.href='profile.html';});
+            document.getElementById('adminLink')?.addEventListener('click',e=>{e.preventDefault();location.href='admin.html';});
+            document.getElementById('themeToggle')?.addEventListener('click',()=>{const d=document.body.classList.toggle('dark-theme');localStorage.setItem('theme',d?'dark':'light');document.querySelector('#themeToggle i').className=d?'fas fa-sun':'fas fa-moon';});
+            setInterval(()=>{const cid=getChallengeId();if(cid)renderComments(cid);},5000);
+        });
+    </script>
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html>

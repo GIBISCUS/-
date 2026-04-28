@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Полезные советы — FitChallenge</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">Fit<span>Challenge</span></a>
+            <nav class="nav">
+                <a href="index.html">Главная</a>
+                <a href="challenges.html">Челленджи</a>
+                 <a href="map.html">Площадки</a>
+                <a href="rating.html">Рейтинг</a>
+                <a href="tips.html" class="active">Советы</a>
+                <a href="about.html">О проекте</a>
+                <a href="#" id="profileLink" style="display: none;">Профиль</a>
+                <a href="#" id="adminLink" style="display: none;">Админ</a>
+                <a href="register.html" id="registerLink">Регистрация</a>
+                <a href="login.html" id="loginLink">Войти</a>
+                <button id="logoutBtn" class="logout-btn" style="display: none;">Выйти</button>
+                <button class="theme-toggle" id="themeToggle" title="Переключить тему"><i class="fas fa-moon"></i></button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="tips-page">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">📚 База знаний</span>
+                    <h2>Полезные советы</h2>
+                    <p>Статьи, видео, музыка и рекомендации для твоего здоровья</p>
+                </div>
+                
+                <div class="tips-tabs">
+                    <button class="tips-tab active" data-tab="articles">📝 Статьи</button>
+                    <button class="tips-tab" data-tab="videos">🎬 Видео</button>
+                    <button class="tips-tab" data-tab="nutrition">🥗 Питание</button>
+                    <button class="tips-tab" data-tab="workouts">🏋️ Тренировки</button>
+                    <button class="tips-tab" data-tab="music">🎵 Музыка</button>
+                </div>
+                
+                <!-- Статьи -->
+                <div class="tips-content active" id="tab-articles">
+                    <div class="tips-grid">
+                        <div class="tip-card"><div class="tip-image" style="background-image:url('https://i.ibb.co/KzKBfxDz/Oi-F4h-DIe-TPHDYz-WKp-Yu-Cw-A7ne-ej-H5-SDss-LXVnv8t-Zdz-W-lcq-V-v-XPJ0zmu-Pam0gxw-O-7w3-Ztk6sk7-Hlp-WXW.jpg')"></div><div class="tip-content"><span class="tip-category">Фитнес</span><h3>Как правильно разминаться</h3><p>Разминка — важнейшая часть любой тренировки. Узнайте, как подготовить тело к нагрузкам и избежать травм.</p><button class="btn btn-secondary btn-sm" onclick="openArticle('warmup')">Читать далее</button></div></div>
+                        <div class="tip-card"><div class="tip-image" style="background-image:url('https://images.unsplash.com/photo-1523362628745-0c100150b504?w=600&q=80')"></div><div class="tip-content"><span class="tip-category">ЗОЖ</span><h3>Водный баланс</h3><p>Вода — основа жизни. Разбираем, как рассчитать свою норму и почему это важно для здоровья.</p><button class="btn btn-secondary btn-sm" onclick="openArticle('water')">Читать далее</button></div></div>
+                        <div class="tip-card"><div class="tip-image" style="background-image:url('https://i.ibb.co/Z6NjsYrr/BIGdu-ETe2t8-GYOYdk-AU6-Bi-S9-S86-uhs-X6k4-YMgxi9-Esky-CRC1onmnq9shsz-OUDYJQIow-Pv-Gx-SGe-Po-Mn-Db-SS0v-B.jpg')"></div><div class="tip-content"><span class="tip-category">Сон</span><h3>Как улучшить качество сна</h3><p>Полноценный сон — залог восстановления. Простые советы для здорового сна.</p><button class="btn btn-secondary btn-sm" onclick="openArticle('sleep')">Читать далее</button></div></div>
+                        <div class="tip-card"><div class="tip-image" style="background-image:url('https://i.ibb.co/whTMzfSh/J-0-IXEEf-O-t-Chi7-Lmn-RGF4s-nhzmh-RMUNC6-P632-Mt-Tl-khc-T1-T1a6-WHe-U58oxg-AB-OZkb-Ogzl-V0zdkc-Qb-X-5-ZM.jpg')"></div><div class="tip-content"><span class="tip-category">Упражнения</span><h3>Планка: техника и ошибки</h3><p>Планка кажется простой, но многие делают её неправильно. Разбираем технику.</p><button class="btn btn-secondary btn-sm" onclick="openArticle('plank')">Читать далее</button></div></div>
+                        <div class="tip-card"><div class="tip-image" style="background-image:url('https://i.ibb.co/XfbZC1t8/4-Ai-Dx-Rw-PZDLWal9-Ob-Q1na-Fnc58u3d-GTou-QRb-Po-4-LIXZg-Kk-ANQVf-eth-GBt3-Od-Yap-Ppb-Bw4jplr-Ri-SP26-Yf.jpg')"></div><div class="tip-content"><span class="tip-category">Фитнес</span><h3>Отжимания с нуля</h3><p>Пошаговая программа: от отжиманий с колен до 100 отжиманий в день.</p><button class="btn btn-secondary btn-sm" onclick="openArticle('pushups')">Читать далее</button></div></div>
+                        <div class="tip-card"><div class="tip-image" style="background-image:url('https://i.ibb.co/7tXdT4m7/N3-BGIs-UTxgm-HVr-Rr-M4-UVw-Iig-S8l-Tx30-Ez-Nejpesl1s-As-X0s-DXwc-CDr-DTFt9g-ZQxb-D2-Qr-Ai-V-Qp-WU1k-b-B.jpg')"></div><div class="tip-content"><span class="tip-category">ЗОЖ</span><h3>10 000 шагов в день</h3><p>Почему врачи рекомендуют ходить каждый день и как это влияет на здоровье.</p><button class="btn btn-secondary btn-sm" onclick="openArticle('walking')">Читать далее</button></div></div>
+                    </div>
+                </div>
+                
+                <!-- Видео -->
+                <div class="tips-content" id="tab-videos">
+                    <div class="tips-grid">
+                        <div class="tip-card video-card"><a href="https://www.youtube.com/results?search_query=утренняя+зарядка+10+минут" target="_blank" class="video-link-card"><div class="tip-image" style="background-image:url('https://i.ibb.co/KzKBfxDz/Oi-F4h-DIe-TPHDYz-WKp-Yu-Cw-A7ne-ej-H5-SDss-LXVnv8t-Zdz-W-lcq-V-v-XPJ0zmu-Pam0gxw-O-7w3-Ztk6sk7-Hlp-WXW.jpg')"><div class="play-button"><i class="fas fa-play"></i></div></div><div class="tip-content"><span class="tip-category">🎬 Видео</span><h3>Утренняя зарядка</h3><p>Бодрая зарядка для отличного начала дня.</p><span class="watch-link">▶ Смотреть на YouTube</span></div></a></div>
+                        <div class="tip-card video-card"><a href="https://www.youtube.com/results?search_query=растяжка+для+начинающих" target="_blank" class="video-link-card"><div class="tip-image" style="background-image:url('https://i.ibb.co/zWKS9sBn/y2p-UKDoz-JTc-XCdo9-Gsdt-SS3hc-B7wot3zo-LM4ys-QMfwcea-Dfac-EEL9-HCos-Rlj-Lfl1uj-IU10-Xh-Nd-LMes-Fvpjsr.jpg')"><div class="play-button"><i class="fas fa-play"></i></div></div><div class="tip-content"><span class="tip-category">🎬 Видео</span><h3>Растяжка для начинающих</h3><p>Комплекс для гибкости и расслабления.</p><span class="watch-link">▶ Смотреть на YouTube</span></div></a></div>
+                        <div class="tip-card video-card"><a href="https://www.youtube.com/results?search_query=йога+для+начинающих+дома" target="_blank" class="video-link-card"><div class="tip-image" style="background-image:url('https://i.ibb.co/7t2b8MCb/9-HN13-Jy8bm-R4-f-M7i-YOH1u-L7-J0u2-Ki2-Q9-Gexjk5-SWuve85i-EHIx-HCr-VLe-K0-NDcp6-Le0z1-Ev5-SEcpe-Kl-Gjx-Wn-EPK.jpg')"><div class="play-button"><i class="fas fa-play"></i></div></div><div class="tip-content"><span class="tip-category">🎬 Видео</span><h3>Йога для начинающих</h3><p>Мягкая практика для снятия стресса.</p><span class="watch-link">▶ Смотреть на YouTube</span></div></a></div>
+                        <div class="tip-card video-card"><a href="https://www.youtube.com/results?search_query=тренировка+дома+без+инвентаря" target="_blank" class="video-link-card"><div class="tip-image" style="background-image:url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=600&q=80')"><div class="play-button"><i class="fas fa-play"></i></div></div><div class="tip-content"><span class="tip-category">🎬 Видео</span><h3>Домашняя тренировка</h3><p>Эффективная тренировка с собственным весом.</p><span class="watch-link">▶ Смотреть на YouTube</span></div></a></div>
+                    </div>
+                </div>
+                
+                <!-- Питание -->
+                <div class="tips-content" id="tab-nutrition">
+                    <div class="tips-grid">
+                        <div class="tip-card"><div class="tip-image" style="background-image:url('https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=600&q=80')"></div><div class="tip-content"><span class="tip-category">🥗 Питание</span><h3>Основы правильного питания</h3><p>Белки, жиры, углеводы: что нужно знать о макронутриентах.</p><button class="btn btn-secondary btn-sm" onclick="openArticle('nutrition-basics')">Читать</button></div></div>
+                        <div class="tip-card"><div class="tip-image" style="background-image:url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=80')"></div><div class="tip-content"><span class="tip-category">🥗 Питание</span><h3>Что есть до и после тренировки</h3><p>Правильное питание вокруг тренировки для максимального результата.</p><button class="btn btn-secondary btn-sm" onclick="openArticle('pre-post-workout')">Читать</button></div></div>
+                        <div class="tip-card"><div class="tip-image" style="background-image:url('https://images.unsplash.com/photo-1505576399279-565b52d4ac71?w=600&q=80')"></div><div class="tip-content"><span class="tip-category">🥗 Питание</span><h3>Как считать КБЖУ</h3><p>Научись считать калории и макронутриенты для достижения целей.</p><button class="btn btn-secondary btn-sm" onclick="openArticle('calories')">Читать</button></div></div>
+                    </div>
+                </div>
+                
+                <!-- Тренировки -->
+                <div class="tips-content" id="tab-workouts">
+                    <div class="tips-grid">
+                        <div class="tip-card"><div class="tip-image" style="background-image:url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80')"></div><div class="tip-content"><span class="tip-category">🏋️ Тренировки</span><h3>Программа тренировок на неделю</h3><p>Готовый план: понедельник — грудь, среда — спина, пятница — ноги.</p><button class="btn btn-secondary btn-sm" onclick="openArticle('weekly-plan')">Читать</button></div></div>
+                        <div class="tip-card"><div class="tip-image" style="background-image:url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=600&q=80')"></div><div class="tip-content"><span class="tip-category">🏋️ Тренировки</span><h3>Домашняя тренировка без инвентаря</h3><p>Эффективный комплекс упражнений с собственным весом.</p><button class="btn btn-secondary btn-sm" onclick="openArticle('home-workout')">Читать</button></div></div>
+                        <div class="tip-card"><div class="tip-image" style="background-image:url('https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=600&q=80')"></div><div class="tip-content"><span class="tip-category">🏋️ Тренировки</span><h3>HIIT: интервальный тренинг</h3><p>Максимум результата за минимум времени.</p><button class="btn btn-secondary btn-sm" onclick="openArticle('hiit')">Читать</button></div></div>
+                    </div>
+                </div>
+                
+                <!-- Музыка -->
+                <div class="tips-content" id="tab-music">
+                    <div class="tips-grid">
+                        <div class="tip-card video-card"><a href="https://open.spotify.com/playlist/37i9dQZF1DX70RN3TfWWJh" target="_blank" class="video-link-card"><div class="tip-image" style="background-image:url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&q=80')"><div class="play-button"><i class="fab fa-spotify"></i></div></div><div class="tip-content"><span class="tip-category">🎵 Spotify</span><h3>Workout Hits</h3><p>Энергичный плейлист для тренировок</p><span class="watch-link">▶ Открыть в Spotify</span></div></a></div>
+                        <div class="tip-card video-card"><a href="https://open.spotify.com/playlist/37i9dQZF1DX6VdMW310YC7" target="_blank" class="video-link-card"><div class="tip-image" style="background-image:url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&q=80')"><div class="play-button"><i class="fab fa-spotify"></i></div></div><div class="tip-content"><span class="tip-category">🎵 Spotify</span><h3>Chill Hits</h3><p>Расслабляющая музыка для отдыха</p><span class="watch-link">▶ Открыть в Spotify</span></div></a></div>
+                        <div class="tip-card video-card"><a href="https://www.youtube.com/results?search_query=workout+music+mix" target="_blank" class="video-link-card"><div class="tip-image" style="background-image:url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&q=80')"><div class="play-button"><i class="fab fa-youtube"></i></div></div><div class="tip-content"><span class="tip-category">🎬 YouTube</span><h3>Workout Mix</h3><p>Миксы для интенсивных тренировок</p><span class="watch-link">▶ Смотреть на YouTube</span></div></a></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <div class="article-overlay" id="articleOverlay" style="display:none">
+            <div class="article-modal">
+                <button class="article-close" onclick="closeArticle()">×</button>
+                <div class="article-body" id="articleBody"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-new">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand"><a href="index.html" class="footer-logo">Fit<span>Challenge</span></a><p>Платформа для тех, кто хочет стать лучшей версией себя</p></div>
+                <div class="footer-links"><a href="index.html">Главная</a><a href="challenges.html">Челленджи</a><a href="rating.html">Рейтинг</a><a href="tips.html">Советы</a><a href="about.html">О проекте</a></div>
+                <div class="footer-social"><a href="#"><i class="fab fa-telegram"></i></a><a href="#"><i class="fab fa-vk"></i></a><a href="#"><i class="fab fa-youtube"></i></a></div>
+            </div>
+            <div class="footer-bottom"><p>&copy; 2026 FitChallenge. Все права защищены.</p></div>
+        </div>
+    </footer>
+
+    <script>
+        const articles = {
+            'warmup': {
+                title: 'Как правильно разминаться перед тренировкой',
+                content: `
+                    <h3>Почему разминка важна?</h3>
+                    <p>Разминка подготавливает сердечно-сосудистую систему, повышает температуру мышц и снижает риск травм на 40-60%. Разогретые мышцы работают эффективнее, а суставы становятся более подвижными.</p>
+                    <h3>Этапы разминки (5-10 минут)</h3>
+                    <ol><li><strong>Кардио (2-3 мин):</strong> бег на месте, прыжки Jumping Jacks, велосипед, скакалка</li><li><strong>Суставная гимнастика (2-3 мин):</strong> вращения головой, плечами, локтями, кистями, тазом, коленями, стопами — по 8-10 раз в каждую сторону</li><li><strong>Динамическая растяжка (2-3 мин):</strong> махи ногами вперёд и в стороны, выпады с поворотом корпуса, наклоны к стопам</li><li><strong>Специальная разминка (1-2 мин):</strong> несколько повторений основного упражнения с небольшим весом или без веса</li></ol>
+                    <h3>Чего нельзя делать на разминке</h3>
+                    <ul><li>❌ Статическая растяжка (держим позу больше 30 сек) — оставь её на заминку</li><li>❌ Слишком быстрый старт — наращивай интенсивность постепенно</li><li>❌ Пропускать разминку вообще — даже 3 минуты лучше, чем ничего</li><li>❌ Разминаться до изнеможения — ты не должна уставать</li></ul>
+                `
+            },
+            'water': {
+                title: 'Водный баланс: сколько воды нужно пить',
+                content: `
+                    <h3>Формула расчёта</h3>
+                    <p>Умножьте свой вес (кг) на 30 мл — получите базовую норму в миллилитрах.</p>
+                    <p><strong>Пример:</strong> 70 кг × 30 мл = 2100 мл (2.1 литра) в день.</p>
+                    <h3>Когда пить больше</h3>
+                    <ul><li>💪 Во время тренировки: +500-700 мл за час занятия</li><li>☀️ В жаркую погоду: +300-500 мл</li><li>🤒 При простуде и температуре: +500 мл</li><li>☕ После кофе и алкоголя: +200 мл на каждую чашку</li></ul>
+                    <h3>Признаки обезвоживания</h3>
+                    <ul><li>Сухость во рту и жажда</li><li>Тёмный цвет мочи</li><li>Головная боль и усталость</li><li>Снижение концентрации</li></ul>
+                    <h3>Простые советы</h3>
+                    <ul><li>Начинай утро со стакана тёплой воды</li><li>Держи бутылку на рабочем столе — так ты не забудешь пить</li><li>Пей до чувства жажды — жажда уже признак обезвоживания</li><li>Добавь лимон или мяту для вкуса, если не любишь простую воду</li></ul>
+                `
+            },
+            'sleep': {
+                title: 'Как улучшить качество сна',
+                content: `
+                    <h3>Гигиена сна — базовые правила</h3>
+                    <ol><li>Ложитесь и вставайте в одно и то же время — даже в выходные</li><li>Температура в спальне: 18-22°C — прохлада помогает заснуть</li><li>Полная темнота или маска для сна — любой свет мешает выработке мелатонина</li><li>Тишина или белый шум — беруши или приложение с шумом дождя</li></ol>
+                    <h3>Что исключить за 1 час до сна</h3>
+                    <ul><li>📱 Экран телефона и компьютера — синий свет подавляет мелатонин</li><li>🍔 Тяжёлую пищу — желудок должен отдыхать, а не переваривать</li><li>🍷 Алкоголь — он нарушает фазы сна, вы не высыпаетесь</li><li>🏋️ Интенсивные тренировки — оставь их на утро или день</li></ul>
+                    <h3>Что помогает заснуть</h3>
+                    <ul><li>Тёплый душ или ванна за 1-2 часа до сна</li><li>Чтение бумажной книги при тёплом свете</li><li>Медитация и дыхательные практики (4-7-8: вдох 4 сек, задержка 7 сек, выдох 8 сек)</li><li>Травяной чай: ромашка, мята, мелисса</li></ul>
+                `
+            },
+            'plank': {
+                title: 'Планка: техника выполнения и ошибки',
+                content: `
+                    <h3>Правильная техника</h3>
+                    <ol><li>Примите упор лёжа на предплечьях, локти строго под плечами</li><li>Тело образует прямую линию от макушки до пяток</li><li>Пресс напряжён, ягодицы сжаты — никакого провисания</li><li>Таз не поднимайте вверх и не опускайте вниз</li><li>Голова продолжает линию позвоночника — смотрите в пол</li><li>Дышите ровно и спокойно, не задерживайте дыхание</li></ol>
+                    <h3>Частые ошибки</h3>
+                    <ul><li>❌ Провисание поясницы — самая опасная ошибка, нагрузка на позвоночник</li><li>❌ Поднятый таз вверх — убирает нагрузку с пресса</li><li>❌ Голова запрокинута назад — напряжение в шее</li><li>❌ Широко расставленные локти — перегрузка плечевых суставов</li><li>❌ Задержка дыхания — мышцы не получают кислород</li></ul>
+                    <h3>Программа прогресса</h3>
+                    <ul><li>Неделя 1: 20-30 секунд</li><li>Неделя 2: 40-50 секунд</li><li>Неделя 3: 60 секунд</li><li>Неделя 4: 90 секунд и больше</li></ul>
+                `
+            },
+            'pushups': {
+                title: 'Как начать отжиматься с нуля',
+                content: `
+                    <h3>Правильная техника отжиманий</h3>
+                    <ol><li>Руки чуть шире плеч, ладони под плечами</li><li>Тело — прямая линия от пяток до макушки</li><li>Вдох — опускаемся, выдох — поднимаемся</li><li>Локти смотрят назад под углом 45° к телу</li><li>Грудь почти касается пола</li></ol>
+                    <h3>Программа для начинающих (4 недели)</h3>
+                    <ul><li><strong>Неделя 1:</strong> отжимания с колен, 3 подхода по 5-8 раз</li><li><strong>Неделя 2:</strong> отжимания с колен, 3 подхода по 10-12 раз</li><li><strong>Неделя 3:</strong> классические отжимания, 3 подхода по 3-5 раз + с колен до отказа</li><li><strong>Неделя 4:</strong> классические отжимания, 3 подхода по 8-10 раз</li></ul>
+                    <h3>Совет</h3>
+                    <p>Не можешь отжаться ни разу? Начни с отжиманий от стены, затем от стола, затем от дивана, и только потом — с пола.</p>
+                `
+            },
+            'walking': {
+                title: 'Польза ходьбы: 10 000 шагов в день',
+                content: `
+                    <h3>Почему именно 10 000 шагов?</h3>
+                    <p>Цифра появилась в Японии в 1960-х годах и с тех пор подтверждена исследованиями: 10 000 шагов в день (около 7-8 км) снижают риск сердечно-сосудистых заболеваний на 30-40%.</p>
+                    <h3>Что даёт ежедневная ходьба</h3>
+                    <ul><li>❤️ Укрепляет сердце и сосуды</li><li>🫁 Улучшает работу лёгких</li><li>⚡ Повышает уровень энергии</li><li>🧠 Улучшает настроение и снижает стресс</li><li>⚖️ Помогает контролировать вес</li><li>😴 Улучшает качество сна</li></ul>
+                    <h3>Как набрать 10 000 шагов</h3>
+                    <ul><li>Выходите на одну остановку раньше и идите пешком</li><li>Гуляйте во время телефонных разговоров</li><li>Поднимайтесь по лестнице вместо лифта</li><li>Паркуйтесь дальше от входа</li><li>Делайте 5-минутные перерывы на ходьбу каждый час</li></ul>
+                `
+            },
+            'nutrition-basics': {
+                title: 'Основы правильного питания',
+                content: `
+                    <h3>Макронутриенты</h3>
+                    <ul><li><strong>Белки (1 г = 4 ккал):</strong> строительный материал для мышц. Источники: курица, рыба, яйца, творог, бобовые</li><li><strong>Жиры (1 г = 9 ккал):</strong> энергия и гормональное здоровье. Источники: авокадо, орехи, оливковое масло, жирная рыба</li><li><strong>Углеводы (1 г = 4 ккал):</strong> топливо для организма. Источники: крупы, овощи, фрукты, цельнозерновой хлеб</li></ul>
+                    <h3>Правило тарелки</h3>
+                    <ul><li>🥩 25% — белок</li><li>🍚 25% — сложные углеводы</li><li>🥗 50% — овощи и зелень</li></ul>
+                    <h3>Режим питания</h3><p>Оптимально: 3 основных приёма пищи + 1-2 перекуса. Не пропускайте завтрак и не наедайтесь на ночь.</p>
+                `
+            },
+            'pre-post-workout': {
+                title: 'Что есть до и после тренировки',
+                content: `
+                    <h3>За 1.5-2 часа до тренировки</h3>
+                    <ul><li>Сложные углеводы для энергии: овсянка, гречка, рис, цельнозерновой хлеб</li><li>Небольшое количество белка: яйцо, кусочек курицы, творог</li><li>Пример: овсянка на молоке с бананом</li></ul>
+                    <h3>За 30 минут до тренировки</h3>
+                    <ul><li>Быстрые углеводы: банан, яблоко, протеиновый батончик</li><li>Не переедайте — иначе будет тяжело заниматься</li></ul>
+                    <h3>После тренировки (в течение 1-2 часов)</h3>
+                    <ul><li>Белок для восстановления мышц: курица, рыба, яйца, протеин</li><li>Углеводы для восполнения энергии: рис, картофель, макароны</li><li>Пример: куриная грудка с рисом и овощами</li></ul>
+                `
+            },
+            'calories': {
+                title: 'Как считать КБЖУ',
+                content: `
+                    <h3>Шаг 1. Базальный метаболизм (BMR)</h3>
+                    <p>Формула Миффлина-Сан Жеора:</p>
+                    <p><strong>Женщины:</strong> 10 × вес(кг) + 6.25 × рост(см) - 5 × возраст - 161</p>
+                    <p><strong>Мужчины:</strong> 10 × вес(кг) + 6.25 × рост(см) - 5 × возраст + 5</p>
+                    <h3>Шаг 2. Уровень активности</h3>
+                    <ul><li>Сидячий образ жизни: BMR × 1.2</li><li>Лёгкая активность (1-3 раза в неделю): BMR × 1.375</li><li>Умеренная активность (3-5 раз): BMR × 1.55</li><li>Высокая активность (6-7 раз): BMR × 1.725</li></ul>
+                    <h3>Шаг 3. Цель</h3>
+                    <ul><li>Похудение: -15-20% от поддержки</li><li>Поддержание веса: без изменений</li><li>Набор массы: +10-15% к поддержке</li></ul>
+                    <h3>Распределение БЖУ</h3>
+                    <ul><li>Белок: 1.5-2 г на кг веса</li><li>Жиры: 0.8-1.2 г на кг веса</li><li>Углеводы: остаток калорий ÷ 4</li></ul>
+                `
+            },
+            'weekly-plan': {
+                title: 'Программа тренировок на неделю',
+                content: `
+                    <h3>Понедельник — Грудь + Трицепс</h3>
+                    <ul><li>Жим лёжа или отжимания: 3 подхода × 10-12 раз</li><li>Разводка гантелей: 3 × 12</li><li>Отжимания на брусьях или от стула: 3 × до отказа</li></ul>
+                    <h3>Среда — Спина + Бицепс</h3>
+                    <ul><li>Тяга гантели в наклоне: 3 × 12</li><li>Гиперэкстензия или «лодочка»: 3 × 15</li><li>Подъём гантелей на бицепс: 3 × 12</li></ul>
+                    <h3>Пятница — Ноги + Плечи</h3>
+                    <ul><li>Приседания: 3 × 15</li><li>Выпады: 3 × 12 на каждую ногу</li><li>Жим гантелей вверх: 3 × 12</li><li>Планка: 3 × 30-60 секунд</li></ul>
+                    <h3>Вторник, четверг, суббота</h3><p>Кардио: ходьба, бег, велосипед — 30-40 минут. Или stretching/йога.</p>
+                    <h3>Воскресенье — Отдых</h3><p>Полноценный отдых и восстановление!</p>
+                `
+            },
+            'home-workout': {
+                title: 'Домашняя тренировка без инвентаря',
+                content: `
+                    <h3>Круговая тренировка (повторить 3-4 круга)</h3>
+                    <ol><li><strong>Приседания:</strong> 20 раз</li><li><strong>Отжимания (можно с колен):</strong> 10-15 раз</li><li><strong>Выпады (по 10 на каждую ногу):</strong> 20 раз</li><li><strong>Ягодичный мостик:</strong> 15 раз</li><li><strong>Скручивания на пресс:</strong> 20 раз</li><li><strong>Планка:</strong> 30-60 секунд</li></ol>
+                    <h3>Правила</h3>
+                    <ul><li>Отдых между упражнениями: 15-30 секунд</li><li>Отдых между кругами: 90-120 секунд</li><li>Вся тренировка занимает 20-30 минут</li></ul>
+                `
+            },
+            'hiit': {
+                title: 'HIIT: высокоинтенсивный интервальный тренинг',
+                content: `
+                    <h3>Что такое HIIT</h3>
+                    <p>Высокоинтенсивная интервальная тренировка — чередование коротких взрывных интервалов с отдыхом. Сжигает калории ещё 24 часа после тренировки (эффект EPOC).</p>
+                    <h3>Пример тренировки (15 минут)</h3>
+                    <ul><li>40 секунд работы, 20 секунд отдыха</li><li>Упражнения: берпи, прыжки из приседа, скалолаз, конькобежец, джампинг-джекс</li><li>5 упражнений × 3 круга = 15 минут</li></ul>
+                    <h3>Важно</h3>
+                    <ul><li>Противопоказания: проблемы с сердцем, суставами, высокое давление</li><li>Новичкам: начните с 20 сек работы / 40 сек отдыха</li><li>Частота: 2-3 раза в неделю, не больше</li></ul>
+                `
+            }
+        };
+        
+        function openArticle(id) {
+            const a = articles[id];
+            if (!a) { alert('Статья в разработке!'); return; }
+            document.getElementById('articleBody').innerHTML = `<h2>${a.title}</h2>${a.content}`;
+            document.getElementById('articleOverlay').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeArticle() {
+            document.getElementById('articleOverlay').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.tips-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.tips-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tips-content').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById(`tab-${this.dataset.tab}`).classList.add('active');
+                });
+            });
+            
+            document.getElementById('articleOverlay')?.addEventListener('click', function(e) { if (e.target === this) closeArticle(); });
+            
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (user) {
+                document.getElementById('profileLink').style.display = 'inline';
+                if (user.role === 'admin') document.getElementById('adminLink').style.display = 'inline';
+                document.getElementById('registerLink').style.display = 'none';
+                document.getElementById('loginLink').style.display = 'none';
+                document.getElementById('logoutBtn').style.display = 'inline';
+            }
+            
+            document.getElementById('logoutBtn')?.addEventListener('click', () => { localStorage.removeItem('currentUser'); location.href = 'index.html'; });
+            document.getElementById('profileLink')?.addEventListener('click', e => { e.preventDefault(); location.href = 'profile.html'; });
+            document.getElementById('adminLink')?.addEventListener('click', e => { e.preventDefault(); location.href = 'admin.html'; });
+            
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-theme');
+                document.querySelector('#themeToggle i').className = 'fas fa-sun';
+            }
+            document.getElementById('themeToggle')?.addEventListener('click', () => {
+                const isDark = document.body.classList.toggle('dark-theme');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                document.querySelector('#themeToggle i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            });
+        });
+    </script>
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html>
