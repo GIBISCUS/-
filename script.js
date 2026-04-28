@@ -1,589 +1,450 @@
-// ============================================
-// BookMaster — КНИЖНЫЙ ИНТЕРНЕТ-МАГАЗИН
-// Файл: script.js
-// ============================================
+// ==================== ТОВАРЫ ====================
+const products = [
+    { 
+        id: 1, 
+        name: "Спортивные компрессионные", 
+        article: "NR002", 
+        price: 599, 
+        size: "26-27", 
+        color: "Черный", 
+        material: "Синтетика", 
+        type: "Спортивные", 
+        desc: "Компрессионные носки для активных тренировок. Поддерживают мышцы, улучшают кровообращение.", 
+        image: "https://www.kant.ru/upload/iblock/2b0/2b01845229b174418229238a6824b166.jpg" 
+    },
+    { 
+        id: 2, 
+        name: "Тёплые шерстяные", 
+        article: "NR003", 
+        price: 790, 
+        size: "28-30", 
+        color: "Серый", 
+        material: "Шерсть", 
+        type: "Тёплые", 
+        desc: "Натуральная шерсть мериноса. Идеальны для холодной погоды, отлично сохраняют тепло.", 
+        image: "https://basket-04.wbbasket.ru/vol584/part58475/58475732/images/big/1.webp" 
+    },
+    { 
+        id: 3, 
+        name: "Дизайнерский принт", 
+        article: "NR004", 
+        price: 450, 
+        size: "22-23", 
+        color: "Красный", 
+        material: "Хлопок", 
+        type: "Дизайнерские", 
+        desc: "Яркий эксклюзивный дизайн. Сделают ваш образ стильным и запоминающимся.", 
+        image: "https://ir.ozone.ru/s3/multimedia-3/6312482307.jpg" 
+    },
+    { 
+        id: 4, 
+        name: "Повседневные серые", 
+        article: "NR005", 
+        price: 349, 
+        size: "26-27", 
+        color: "Серый", 
+        material: "Хлопок", 
+        type: "Повседневные", 
+        desc: "Классические носки на каждый день. Мягкие, дышащие, не теряют форму.", 
+        image: "https://ir.ozone.ru/multimedia/c1000/1010739611.jpg" 
+    },
+    { 
+        id: 5, 
+        name: "Спортивные синие", 
+        article: "NR006", 
+        price: 520, 
+        size: "28-30", 
+        color: "Синий", 
+        material: "Синтетика", 
+        type: "Спортивные", 
+        desc: "Влагоотводящие спортивные носки. Отлично подходят для бега и фитнеса.", 
+        image: "https://basket-04.wbbasket.ru/vol571/part57163/57163384/images/big/1.webp" 
+    },
+    { 
+        id: 6, 
+        name: "Ультратеплые меринос", 
+        article: "NR007", 
+        price: 990, 
+        size: "28-30", 
+        color: "Черный", 
+        material: "Шерсть", 
+        type: "Тёплые", 
+        desc: "Максимальная теплоизоляция. Носки из высококачественной шерсти мериноса.", 
+        image: "https://ir.ozone.ru/s3/multimedia-1-1/7191625213.jpg" 
+    },
+    { 
+        id: 7, 
+        name: "Дизайнерские горошек", 
+        article: "NR008", 
+        price: 470, 
+        size: "24-25", 
+        color: "Белый", 
+        material: "Хлопок", 
+        type: "Дизайнерские", 
+        desc: "Стильный горошек — тренд сезона. Привлекают внимание и поднимают настроение.", 
+        image: "https://imgcdn.befree.ru/rest/V1/images/1024/product/images/BF2614934003/BF2614934003_1_1.jpg" 
+    },
+    { 
+        id: 8, 
+        name: "Кашемировые премиум", 
+        article: "NR013", 
+        price: 1490, 
+        size: "28-30", 
+        color: "Серый", 
+        material: "Шерсть", 
+        type: "Тёплые", 
+        desc: "Роскошные носки из кашемира. Невероятная мягкость и комфорт.", 
+        image: "https://www.charuel.ru/upload/resize_cache/iblock/118/1100_1471_1/pwq11nl3d2yl5zhso1hx8goijlbey1kb.jpg" 
+    }
+];
 
-// ============================================
-// БАЗА ДАННЫХ (JSON)
-// ============================================
+// ========== Глобальные переменные ==========
+let cart = JSON.parse(localStorage.getItem('socks_cart')) || [];
+let currentUser = JSON.parse(localStorage.getItem('socks_user')) || null;
+let orders = JSON.parse(localStorage.getItem('socks_orders')) || [];
+let activeCategory = "all";
 
-let database = {
-    books: [
-        { id: 1, title: "1984", author: "Джордж Оруэлл", author_bio: "Джордж Оруэлл (1903-1950) — английский писатель и публицист, известный своими антиутопическими романами.", genre: "Классика", price: 450, rating: 4.8, year: 1949, description: "«1984» — культовый роман-антиутопия о тоталитарном обществе будущего.", cover: "https://ir.ozone.ru/s3/multimedia-t/6864042989.jpg" },
-        { id: 2, title: "Дюна", author: "Фрэнк Герберт", author_bio: "Фрэнк Герберт (1920-1986) — американский писатель-фантаст.", genre: "Фантастика", price: 690, rating: 4.9, year: 1965, description: "«Дюна» — эпическая сага о пустынной планете Арракис.", cover: "https://avatars.mds.yandex.net/get-mpic/4544069/2a00000190eff1f51f1359e523c7bbe8ce84/orig" },
-        { id: 3, title: "Преступление и наказание", author: "Фёдор Достоевский", author_bio: "Фёдор Михайлович Достоевский (1821-1881) — великий русский писатель.", genre: "Классика", price: 390, rating: 4.9, year: 1866, description: "Роман о студенте Раскольникове и его теории о праве на кровь.", cover: "https://avatars.mds.yandex.net/get-mpic/12554399/2a0000019216b9b71ba774d3f3ed0269e38f/orig" },
-        { id: 4, title: "Тень ветра", author: "Карлос Руис Сафон", author_bio: "Карлос Руис Сафон (1964-2020) — испанский писатель.", genre: "Детектив", price: 530, rating: 4.7, year: 2001, description: "Мистический детектив о тайнах забытых книг.", cover: "https://bookmix.ru/reviews/images/0/4/1/reviews_1605370682.jpg" },
-        { id: 5, title: "Игра престолов", author: "Джордж Мартин", author_bio: "Джордж Мартин — создатель «Песни льда и огня».", genre: "Фэнтези", price: 1200, rating: 4.8, year: 1996, description: "Борьба за Железный трон Вестероса.", cover: "https://ndc.book24.ru/resize/820x1180/pim/products/images/50/ba/0199e9e7-4a12-7812-bb07-79957cd050ba.jpg" },
-        { id: 6, title: "Атлант расправил плечи", author: "Айн Рэнд", author_bio: "Айн Рэнд (1905-1982) — философ и писатель.", genre: "Бизнес", price: 890, rating: 4.5, year: 1957, description: "Философский роман о свободе и капитализме.", cover: "https://avatars.mds.yandex.net/get-mpic/16390348/2a0000019c0ada22388c8168f41868641b72/orig" },
-        { id: 7, title: "Стартап", author: "Эрик Рис", author_bio: "Эрик Рис — автор «Бережливого стартапа».", genre: "Бизнес", price: 1100, rating: 4.4, year: 2011, description: "Методология создания успешных продуктов.", cover: "https://alpinabook.ru/upload/resize_cache/converted/90/iblock/78f/759_960_1/78f9ee63a53525d6566aed4a769db65e.jpg.webp" },
-        { id: 8, title: "Убить пересмешника", author: "Харпер Ли", author_bio: "Харпер Ли (1926-2016) — американская писательница.", genre: "Классика", price: 470, rating: 4.7, year: 1960, description: "Роман о расовой справедливости.", cover: "https://storage.yandexcloud.net/colorlon-prod/PICS/C7D9E8B6-8562-11EF-AD22-003048FBFCC9.jpg" },
-        { id: 9, title: "Солярис", author: "Станислав Лем", author_bio: "Станислав Лем (1921-2006) — польский фантаст.", genre: "Фантастика", price: 610, rating: 4.6, year: 1961, description: "О встрече с живым океаном.", cover: "https://basket-35.wbbasket.ru/vol7569/part756920/756920084/images/big/1.webp" },
-        { id: 10, title: "Тайная история", author: "Донна Тартт", author_bio: "Донна Тартт — лауреат Пулитцеровской премии.", genre: "Детектив", price: 780, rating: 4.8, year: 1992, description: "О группе студентов, увлечённых ритуалами.", cover: "https://avatars.mds.yandex.net/get-mpic/1567763/2a000001918740eaa7e6c8cce7af0449b33d/orig" }
-    ],
-    users: [
-        { id: 1, name: "Администратор", email: "admin@bookmaster.ru", password: "admin123", role: "admin", phone: "", address: "", created_at: "2025-01-01" },
-        { id: 2, name: "Иван Петров", email: "user@test.ru", password: "123", role: "user", phone: "+7 (999) 123-45-67", address: "г. Москва, ул. Книжная, д. 1", created_at: "2025-01-15" }
-    ],
-    orders: [],
-    favorites: [],
-    reviews: [],
-    stats: { total_visits: 0, total_sales: 0, total_books_sold: 0 }
-};
-
-// ============================================
-// ЗАГРУЗКА ДАННЫХ ИЗ LOCALSTORAGE
-// ============================================
-
-let loadedData = localStorage.getItem('bookmaster_database');
-if (loadedData) {
-    try {
-        let parsed = JSON.parse(loadedData);
-        if (parsed.books && parsed.users) {
-            database = parsed;
-        }
-    } catch(e) {}
-} else {
-    localStorage.setItem('bookmaster_database', JSON.stringify(database));
+// ========== Вспомогательные функции ==========
+function saveCart() { 
+    localStorage.setItem('socks_cart', JSON.stringify(cart)); 
+    updateCartUI(); 
 }
 
-// Вспомогательные переменные
-let books = database.books;
-let users = database.users;
-let orders = database.orders;
-let favorites = database.favorites;
-let reviews = database.reviews;
-
-let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-// ============================================
-// СОХРАНЕНИЕ ДАННЫХ
-// ============================================
-
-function saveDatabase() {
-    database.books = books;
-    database.users = users;
-    database.orders = orders;
-    database.favorites = favorites;
-    database.reviews = reviews;
-    localStorage.setItem('bookmaster_database', JSON.stringify(database));
+function updateCartUI() { 
+    const total = cart.reduce((s, i) => s + i.qty, 0);
+    document.getElementById('cartCounter').innerText = total; 
 }
 
-function saveAllData() {
-    saveDatabase();
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    localStorage.setItem('cart', JSON.stringify(cart));
+function showToast(msg) { 
+    let t = document.createElement('div'); 
+    t.className = 'toast-msg'; 
+    t.innerHTML = msg; 
+    document.body.appendChild(t); 
+    setTimeout(() => t.remove(), 2200); 
 }
 
-// ============================================
-// ГЛАВНАЯ СТРАНИЦА
-// ============================================
+// ========== Навигация ==========
+function navigateToCatalog() {
+    document.getElementById('catalogView').style.display = 'block';
+    document.getElementById('detailView').style.display = 'none';
+    filterAndRender();
+}
 
-function showMainPage() {
-    const mainContent = document.getElementById('mainContent');
+function navigateToProduct(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
     
-    mainContent.innerHTML = `
-        <div class="container main-layout">
-            <aside class="filters">
-                <h3>Фильтры</h3>
-                <div class="filter-group"><label>Жанр</label><select id="genreFilter"><option value="all">Все</option></select></div>
-                <div class="filter-group"><label>Автор</label><select id="authorFilter"><option value="all">Все</option></select></div>
-                <div class="filter-group"><label>Цена (до)</label><input type="number" id="priceMax" placeholder="Макс. цена" value="2000"></div>
-                <button id="resetFilters" style="background:#aaa;">Сбросить</button>
-            </aside>
-            <div class="catalog">
-                <div class="sort-bar">
-                    <span>📖 Найдено: <span id="resultsCount">0</span> книг</span>
-                    <select id="sortSelect" class="sort-select">
-                        <option value="default">Сортировка</option>
-                        <option value="price_asc">Цена ▲</option>
-                        <option value="price_desc">Цена ▼</option>
-                    </select>
+    document.getElementById('catalogView').style.display = 'none';
+    const detailView = document.getElementById('detailView');
+    detailView.style.display = 'block';
+    detailView.innerHTML = `
+        <div class="product-detail-page">
+            <div class="back-link" onclick="navigateToCatalog()">
+                <i class="fas fa-arrow-left"></i> Назад к каталогу
+            </div>
+            <div class="detail-container">
+                <div class="detail-image">
+                    <img src="${product.image}" alt="${product.name}" onerror="this.src='https://placehold.co/600x600/1e3c72/white?text=🧦'">
                 </div>
-                <div class="books-grid" id="booksGrid"></div>
+                <div class="detail-info">
+                    <div class="product-category">${product.type}</div>
+                    <h1>${product.name}</h1>
+                    <div class="detail-price">${product.price} ₽</div>
+                    <div class="detail-attr">
+                        <p><strong>Артикул:</strong> ${product.article}</p>
+                        <p><strong>Размер:</strong> ${product.size} см</p>
+                        <p><strong>Цвет:</strong> ${product.color}</p>
+                        <p><strong>Состав:</strong> ${product.material}</p>
+                        <p><strong>Описание:</strong> ${product.desc}</p>
+                    </div>
+                    <div class="detail-buttons">
+                        <button class="btn-large btn-buy" onclick="addToCartAndToast(${product.id})">
+                            <i class="fas fa-shopping-cart"></i> Добавить в корзину
+                        </button>
+                        <button class="btn-large btn-back" onclick="navigateToCatalog()">
+                            Продолжить покупки
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     `;
-    
-    loadFilters();
-    filterAndSortBooks();
-    attachFilterEvents();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function attachFilterEvents() {
-    const searchBtn = document.getElementById('searchBtn');
-    const genreFilter = document.getElementById('genreFilter');
-    const authorFilter = document.getElementById('authorFilter');
-    const priceMax = document.getElementById('priceMax');
-    const sortSelect = document.getElementById('sortSelect');
-    const resetBtn = document.getElementById('resetFilters');
-    
-    if (searchBtn) {
-        const newSearchBtn = searchBtn.cloneNode(true);
-        searchBtn.parentNode.replaceChild(newSearchBtn, searchBtn);
-        newSearchBtn.onclick = filterAndSortBooks;
-    }
-    
-    if (genreFilter) genreFilter.onchange = filterAndSortBooks;
-    if (authorFilter) authorFilter.onchange = filterAndSortBooks;
-    if (priceMax) priceMax.oninput = filterAndSortBooks;
-    if (sortSelect) sortSelect.onchange = filterAndSortBooks;
-    if (resetBtn) resetBtn.onclick = () => {
-        if (genreFilter) genreFilter.value = 'all';
-        if (authorFilter) authorFilter.value = 'all';
-        if (priceMax) priceMax.value = '2000';
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) searchInput.value = '';
-        filterAndSortBooks();
-    };
+function addToCartAndToast(productId) {
+    const product = products.find(p => p.id === productId);
+    const exist = cart.find(i => i.id === productId);
+    if (exist) exist.qty++;
+    else cart.push({...product, qty: 1});
+    saveCart();
+    showToast(`${product.name} добавлен в корзину`);
 }
 
-function loadFilters() {
-    const genres = [...new Set(books.map(b => b.genre))];
-    const genreSelect = document.getElementById('genreFilter');
-    if (genreSelect) {
-        genreSelect.innerHTML = '<option value="all">Все</option>';
-        genres.forEach(g => { const opt = document.createElement('option'); opt.value = g; opt.textContent = g; genreSelect.appendChild(opt); });
-    }
+// ========== Фильтрация и отрисовка ==========
+function filterAndRender() {
+    let filtered = [...products];
+    let minP = parseInt(document.getElementById('priceMin').value) || 0;
+    let maxP = parseInt(document.getElementById('priceMax').value) || 999999;
+    let sizeVal = document.getElementById('sizeSelect').value;
+    let colors = Array.from(document.querySelectorAll('#colorGroup input:checked')).map(c=>c.value);
+    let materials = Array.from(document.querySelectorAll('#materialGroup input:checked')).map(c=>c.value);
+    let search = document.getElementById('globalSearch').value.toLowerCase();
     
-    const authors = [...new Set(books.map(b => b.author))];
-    const authorSelect = document.getElementById('authorFilter');
-    if (authorSelect) {
-        authorSelect.innerHTML = '<option value="all">Все</option>';
-        authors.forEach(a => { const opt = document.createElement('option'); opt.value = a; opt.textContent = a; authorSelect.appendChild(opt); });
-    }
+    filtered = filtered.filter(p => p.price >= minP && p.price <= maxP);
+    if (sizeVal) filtered = filtered.filter(p => p.size === sizeVal);
+    if (colors.length) filtered = filtered.filter(p => colors.includes(p.color));
+    if (materials.length) filtered = filtered.filter(p => materials.includes(p.material));
+    if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search) || p.article.toLowerCase().includes(search));
+    if (activeCategory !== "all") filtered = filtered.filter(p => p.type === activeCategory);
+    
+    document.getElementById('resultStats').innerHTML = `найдено ${filtered.length} товаров`;
+    renderProducts(filtered);
 }
 
-function filterAndSortBooks() {
-    const searchInput = document.getElementById('searchInput');
-    const search = searchInput ? searchInput.value.toLowerCase() : '';
-    const genre = document.getElementById('genreFilter')?.value || 'all';
-    const author = document.getElementById('authorFilter')?.value || 'all';
-    const maxPrice = parseFloat(document.getElementById('priceMax')?.value) || Infinity;
-
-    let filtered = books.filter(b => {
-        if (search && !b.title.toLowerCase().includes(search) && !b.author.toLowerCase().includes(search)) return false;
-        if (genre !== 'all' && b.genre !== genre) return false;
-        if (author !== 'all' && b.author !== author) return false;
-        if (b.price > maxPrice) return false;
-        return true;
-    });
-
-    const sort = document.getElementById('sortSelect')?.value;
-    if (sort === 'price_asc') filtered.sort((a,b) => a.price - b.price);
-    if (sort === 'price_desc') filtered.sort((a,b) => b.price - a.price);
-
-    const resultsCount = document.getElementById('resultsCount');
-    if (resultsCount) resultsCount.innerText = filtered.length;
-    
-    const grid = document.getElementById('booksGrid');
-    if (!grid) return;
-    if (filtered.length === 0) { grid.innerHTML = '<div style="padding:2rem;">Книги не найдены</div>'; return; }
-
-    const userFavorites = currentUser ? favorites.filter(f => f.user_id === currentUser.id).map(f => f.book_id) : [];
-
-    grid.innerHTML = filtered.map(book => `
-        <div class="book-card" onclick="showBookDetail(${book.id})">
-            <div class="book-cover" style="background-image: url('${book.cover || 'https://via.placeholder.com/260x260?text=📚'}');">
-                ${!book.cover ? '📖' : ''}
-            </div>
-            <div class="book-info">
-                <div class="book-title">${book.title}</div>
-                <div class="book-author">${book.author} ⭐ ${book.rating}</div>
-                <div class="book-price">${book.price} ₽</div>
-                <button class="add-to-cart" onclick="event.stopPropagation(); addToCart({id:${book.id},title:'${book.title.replace(/'/g, "\\'")}',price:${book.price},cover:'${book.cover}'})">В корзину</button>
-                <button class="favorite-btn ${userFavorites.includes(book.id) ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite(${book.id})">❤️ ${userFavorites.includes(book.id) ? 'В избранном' : 'В избранное'}</button>
+function renderProducts(arr) {
+    const grid = document.getElementById('productGrid');
+    if (!arr.length) { 
+        grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:48px;">🧦 Ничего не найдено</div>'; 
+        return; 
+    }
+    grid.innerHTML = arr.map(p => `
+        <div class="product-card" onclick="navigateToProduct(${p.id})">
+            <img class="product-img" src="${p.image}" alt="${p.name}" onerror="this.src='https://placehold.co/400x300/1e3c72/white?text=🧦'">
+            <div class="product-info">
+                <div class="product-category">${p.type}</div>
+                <div class="product-name">${p.name}</div>
+                <div class="product-detail">
+                    <span>📏 ${p.size} см</span>
+                    <span>🎨 ${p.color}</span>
+                    <span>🧵 ${p.material}</span>
+                </div>
+                <div class="product-price">${p.price} ₽</div>
+                <button class="btn-cart" onclick="event.stopPropagation(); addToCartAndToast(${p.id})">
+                    <i class="fas fa-cart-plus"></i> В корзину
+                </button>
             </div>
         </div>
     `).join('');
 }
 
-// ============================================
-// ДЕТАЛЬНАЯ СТРАНИЦА КНИГИ
-// ============================================
-
-function showBookDetail(bookId) {
-    const book = books.find(b => b.id === bookId);
-    if (!book) return;
-    
-    const bookReviews = reviews.filter(r => r.book_id === bookId);
-    const userFavorites = currentUser ? favorites.filter(f => f.user_id === currentUser.id).map(f => f.book_id) : [];
-    const isFavorite = userFavorites.includes(bookId);
-    
-    document.getElementById('mainContent').innerHTML = `
-        <div class="container">
-            <button class="btn-back" onclick="showMainPage()">← Назад к каталогу</button>
-            <div class="book-detail">
-                <div class="book-detail-grid">
-                    <div class="book-detail-cover" style="background-image: url('${book.cover || 'https://via.placeholder.com/300x400?text=No+Cover'}');"></div>
-                    <div class="book-detail-info">
-                        <h1>${book.title}</h1>
-                        <div class="book-detail-author">${book.author} (${book.year})</div>
-                        <div class="book-detail-rating">⭐ ${book.rating} / 5 (${bookReviews.length} отзывов)</div>
-                        <div class="book-detail-price">${book.price} ₽</div>
-                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                            <button onclick="addToCart({id:${book.id},title:'${book.title.replace(/'/g, "\\'")}',price:${book.price},cover:'${book.cover}'})">🛒 В корзину</button>
-                            <button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavoriteFromDetail(${book.id})">❤️ ${isFavorite ? 'В избранном' : 'В избранное'}</button>
-                        </div>
-                        
-                        <div class="book-description">
-                            <h3>📖 О книге</h3>
-                            <p>${book.description}</p>
-                        </div>
-                        
-                        <div class="author-bio">
-                            <h3>✍️ Об авторе</h3>
-                            <p>${book.author_bio}</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="reviews-section">
-                    <h3>📝 Отзывы читателей</h3>
-                    <div id="bookReviewsList">
-                        ${bookReviews.length === 0 ? '<p>Пока нет отзывов. Будьте первым!</p>' : 
-                            bookReviews.map(review => {
-                                const user = users.find(u => u.id === review.user_id);
-                                return `
-                                    <div class="review-card">
-                                        <div class="review-author">${user?.name || 'Аноним'}</div>
-                                        <div class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}</div>
-                                        <div class="review-text">${review.comment}</div>
-                                        <div class="review-date">${review.date}</div>
-                                    </div>
-                                `;
-                            }).join('')
-                        }
-                    </div>
-                    
-                    ${currentUser ? `
-                        <div class="add-review-form">
-                            <h3>✍️ Оставить отзыв</h3>
-                            <div class="form-group">
-                                <label>Оценка</label>
-                                <select id="detailReviewRating">
-                                    <option value="5">⭐⭐⭐⭐⭐ 5</option>
-                                    <option value="4">⭐⭐⭐⭐ 4</option>
-                                    <option value="3">⭐⭐⭐ 3</option>
-                                    <option value="2">⭐⭐ 2</option>
-                                    <option value="1">⭐ 1</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Комментарий</label>
-                                <textarea id="detailReviewComment" rows="3" placeholder="Поделитесь впечатлениями о книге..."></textarea>
-                            </div>
-                            <button onclick="addReviewFromDetail(${book.id})">Отправить отзыв</button>
-                        </div>
-                    ` : '<p style="margin-top:1rem;"><a href="#" onclick="openLoginModal(); return false;">Войдите</a>, чтобы оставить отзыв</p>'}
+// ========== Корзина ==========
+function openCartModal() {
+    let modal = document.getElementById('cartModal');
+    let container = document.getElementById('cartList');
+    if (!cart.length) { 
+        container.innerHTML = '<p style="text-align:center; padding:20px;">Корзина пуста</p>'; 
+        document.getElementById('cartTotalSum').innerHTML = '';
+    } else {
+        container.innerHTML = cart.map(item => `
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #eef2ff; padding:12px 0;">
+                <div><b>${item.name}</b><br>${item.price}₽ x ${item.qty}</div>
+                <div>${item.price * item.qty}₽ 
+                    <button data-id="${item.id}" class="cartInc" style="margin-left:8px; padding:4px 10px; border-radius:30px; border:none; background:#1e3c72; color:white;">+</button>
+                    <button data-id="${item.id}" class="cartDec" style="margin:0 4px; padding:4px 10px; border-radius:30px; border:none; background:#e25c3a; color:white;">-</button>
+                    <button data-id="${item.id}" class="cartDel" style="padding:4px 8px; border-radius:30px; border:none; background:#ccc;">🗑️</button>
                 </div>
             </div>
-        </div>
-    `;
-}
-
-function addReviewFromDetail(bookId) {
-    if (!currentUser) { alert('Войдите в аккаунт'); return; }
-    const rating = parseInt(document.getElementById('detailReviewRating').value);
-    const comment = document.getElementById('detailReviewComment').value;
-    if (!comment) { alert('Напишите комментарий'); return; }
-    
-    reviews.push({
-        id: Date.now(),
-        book_id: bookId,
-        user_id: currentUser.id,
-        rating: rating,
-        comment: comment,
-        date: new Date().toISOString().split('T')[0]
-    });
-    saveAllData();
-    
-    const bookReviews = reviews.filter(r => r.book_id === bookId);
-    const avgRating = bookReviews.reduce((sum, r) => sum + r.rating, 0) / bookReviews.length;
-    const book = books.find(b => b.id === bookId);
-    if (book) book.rating = Math.round(avgRating * 10) / 10;
-    saveAllData();
-    
-    alert('Отзыв добавлен!');
-    showBookDetail(bookId);
-}
-
-// ============================================
-// ИЗБРАННОЕ
-// ============================================
-
-function toggleFavorite(bookId) {
-    if (!currentUser) { alert('Войдите в аккаунт'); return; }
-    const existingIndex = favorites.findIndex(f => f.user_id === currentUser.id && f.book_id === bookId);
-    if (existingIndex === -1) {
-        favorites.push({ user_id: currentUser.id, book_id: bookId });
-        alert('Добавлено в избранное');
-    } else {
-        favorites.splice(existingIndex, 1);
-        alert('Удалено из избранного');
+        `).join('');
+        let total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+        document.getElementById('cartTotalSum').innerHTML = `<b>Итого: ${total} ₽</b>`;
+        
+        document.querySelectorAll('.cartInc').forEach(b => b.addEventListener('click', () => { changeQty(parseInt(b.dataset.id), 1); openCartModal(); }));
+        document.querySelectorAll('.cartDec').forEach(b => b.addEventListener('click', () => { changeQty(parseInt(b.dataset.id), -1); openCartModal(); }));
+        document.querySelectorAll('.cartDel').forEach(b => b.addEventListener('click', () => { removeItem(parseInt(b.dataset.id)); openCartModal(); }));
     }
-    saveAllData();
-    filterAndSortBooks();
+    modal.style.display = 'flex';
 }
 
-function toggleFavoriteFromDetail(bookId) {
-    if (!currentUser) { alert('Войдите в аккаунт'); return; }
-    const existingIndex = favorites.findIndex(f => f.user_id === currentUser.id && f.book_id === bookId);
-    if (existingIndex === -1) {
-        favorites.push({ user_id: currentUser.id, book_id: bookId });
-        alert('Добавлено в избранное');
-    } else {
-        favorites.splice(existingIndex, 1);
-        alert('Удалено из избранного');
+function changeQty(id, delta) { 
+    let idx = cart.findIndex(i => i.id === id); 
+    if (idx !== -1) { 
+        cart[idx].qty += delta; 
+        if (cart[idx].qty <= 0) cart.splice(idx, 1); 
+        saveCart(); 
+    } 
+}
+
+function removeItem(id) { 
+    cart = cart.filter(i => i.id !== id); 
+    saveCart(); 
+}
+
+function checkoutOrder() {
+    if (!currentUser) { 
+        showToast('Войдите в личный кабинет'); 
+        closeModal('cartModal'); 
+        document.getElementById('profileModal').style.display = 'flex'; 
+        return; 
     }
-    saveAllData();
-    showBookDetail(bookId);
-}
-
-// ============================================
-// АВТОРИЗАЦИЯ
-// ============================================
-
-function register() {
-    const name = document.getElementById('regName').value;
-    const email = document.getElementById('regEmail').value;
-    const password = document.getElementById('regPassword').value;
-    const phone = document.getElementById('regPhone').value;
-    const address = document.getElementById('regAddress').value;
-    if (!name || !email || !password) return alert('Заполните имя, email и пароль');
-    if (users.find(u => u.email === email)) return alert('Пользователь уже существует');
-    const newUser = { id: Date.now(), name, email, password, phone, address, role: 'user', created_at: new Date().toISOString().split('T')[0] };
-    users.push(newUser);
-    saveAllData();
-    alert('Регистрация успешна! Теперь войдите.');
-    closeModal('registerModal');
-    openLoginModal();
-}
-
-function login() {
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    const user = users.find(u => u.email === email && u.password === password);
-    if (!user) return alert('Неверный email или пароль');
-    currentUser = user;
-    saveAllData();
-    updateAuthUI();
-    closeModal('loginModal');
-    alert(`Добро пожаловать, ${user.name}!`);
-    showMainPage();
-}
-
-function logout() {
-    currentUser = null;
-    saveAllData();
-    updateAuthUI();
-    showMainPage();
-}
-
-function updateAuthUI() {
-    if (currentUser) {
-        document.getElementById('authButtons').style.display = 'none';
-        document.getElementById('userPanel').style.display = 'flex';
-        document.getElementById('userNameDisplay').innerText = currentUser.name;
-    } else {
-        document.getElementById('authButtons').style.display = 'flex';
-        document.getElementById('userPanel').style.display = 'none';
+    if (!cart.length) { 
+        showToast('Корзина пуста'); 
+        return; 
     }
-    updateCartCount();
-}
-
-// ============================================
-// КОРЗИНА
-// ============================================
-
-function addToCart(book) {
-    if (!currentUser) { alert('Войдите в аккаунт'); return; }
-    const existing = cart.find(i => i.id === book.id);
-    if (existing) existing.qty++;
-    else cart.push({ ...book, qty: 1 });
-    saveAllData();
-    updateCartCount();
-    alert(`"${book.title}" добавлена в корзину`);
-}
-
-function updateCartCount() {
-    const count = cart.reduce((s, i) => s + i.qty, 0);
-    const cartCount = document.getElementById('cartCount');
-    if (cartCount) cartCount.innerText = count;
-}
-
-function renderCartModal() {
-    const container = document.getElementById('cartItemsList');
-    if (cart.length === 0) {
-        container.innerHTML = '<p>Корзина пуста</p>';
-        document.getElementById('cartTotalAmount').innerHTML = 'Итого: 0 ₽';
-        return;
-    }
-    let html = '', total = 0;
-    cart.forEach(item => {
-        total += item.price * item.qty;
-        html += `<div class="cart-item"><div><strong>${item.title}</strong><br>${item.price}₽ x ${item.qty}</div><div>${item.price * item.qty}₽ <button onclick="removeFromCart(${item.id})">❌</button></div></div>`;
-    });
-    container.innerHTML = html;
-    document.getElementById('cartTotalAmount').innerHTML = `Итого: ${total} ₽<br><button onclick="checkout()">Оформить заказ</button>`;
-}
-
-function removeFromCart(id) {
-    cart = cart.filter(i => i.id !== id);
-    saveAllData();
-    updateCartCount();
-    renderCartModal();
-}
-
-function checkout() {
-    if (cart.length === 0) return alert('Корзина пуста');
-    const newOrder = {
-        id: orders.length + 1,
-        user_id: currentUser.id,
-        date: new Date().toISOString().split('T')[0],
-        status: "новый",
-        total: cart.reduce((sum, item) => sum + (item.price * item.qty), 0),
-        items: cart.map(item => ({ book_id: item.id, title: item.title, quantity: item.qty, price: item.price }))
+    let newOrder = { 
+        id: Date.now(), 
+        userId: currentUser.email, 
+        items: cart.map(i => ({ name: i.name, qty: i.qty, price: i.price })), 
+        total: cart.reduce((s, i) => s + i.price * i.qty, 0), 
+        date: new Date().toLocaleString(), 
+        status: 'новый' 
     };
-    orders.push(newOrder);
-    saveAllData();
-    alert('Заказ оформлен! Спасибо за покупку!');
-    cart = [];
-    saveAllData();
-    updateCartCount();
+    orders.push(newOrder); 
+    localStorage.setItem('socks_orders', JSON.stringify(orders));
+    cart = []; 
+    saveCart(); 
+    showToast('Заказ оформлен!'); 
     closeModal('cartModal');
 }
 
-// ============================================
-// ЛИЧНЫЙ КАБИНЕТ
-// ============================================
-
-function openProfileModal() {
+// ========== Личный кабинет ==========
+function renderProfileOrders() {
     if (!currentUser) return;
-    document.getElementById('profileName').value = currentUser.name || '';
-    document.getElementById('profileEmail').value = currentUser.email || '';
-    document.getElementById('profilePhone').value = currentUser.phone || '';
-    document.getElementById('profileAddress').value = currentUser.address || '';
-    document.getElementById('profilePassword').value = '';
-    loadOrders();
-    loadFavorites();
-    loadUserReviews();
-    document.getElementById('profileModal').style.display = 'flex';
+    let userOrders = orders.filter(o => o.userId === currentUser.email);
+    let historyDiv = document.getElementById('orderHistoryList');
+    if (!userOrders.length) historyDiv.innerHTML = '<p>Нет заказов</p>';
+    else historyDiv.innerHTML = userOrders.map(o => `
+        <div style="border-bottom:1px solid #e2e8f0; padding:12px 0;">
+            <b>${o.date}</b> | ${o.total}₽ | статус: ${o.status}<br>Товаров: ${o.items.length}
+        </div>
+    `).join('');
 }
 
-function showTab(tab) {
-    const tabs = ['profile', 'orders', 'favorites', 'reviews'];
-    tabs.forEach(t => {
-        const tabDiv = document.getElementById(t + 'Tab');
-        const btn = document.querySelector(`.tab-btn[onclick="showTab('${t}')"]`);
-        if (tabDiv) {
-            if (t === tab) {
-                tabDiv.classList.add('active');
-                if (btn) btn.classList.add('active');
-            } else {
-                tabDiv.classList.remove('active');
-                if (btn) btn.classList.remove('active');
+function updateAuthUI() {
+    let logged = !!currentUser;
+    document.getElementById('unauthBlock').style.display = logged ? 'none' : 'block';
+    document.getElementById('authBlock').style.display = logged ? 'block' : 'none';
+    if (logged) {
+        document.getElementById('userNameDisplay').innerText = currentUser.name;
+        document.getElementById('userEmailDisplay').innerText = currentUser.email;
+        renderProfileOrders();
+    }
+}
+
+function doLogin() { 
+    let email = document.getElementById('loginEmail').value; 
+    let pass = document.getElementById('loginPassword').value; 
+    let users = JSON.parse(localStorage.getItem('socks_users')) || []; 
+    let u = users.find(u => u.email === email && u.password === pass); 
+    if (u) { 
+        currentUser = u; 
+        localStorage.setItem('socks_user', JSON.stringify(currentUser)); 
+        updateAuthUI(); 
+        showToast(`Привет, ${u.name}`); 
+        closeModal('profileModal'); 
+        filterAndRender(); 
+    } else alert('Неверный логин'); 
+}
+
+function doRegister() { 
+    let name = document.getElementById('regFullname').value; 
+    let email = document.getElementById('RegEmail').value; 
+    let pass = document.getElementById('RegPassword').value; 
+    if (!name || !email || !pass) { alert('Заполните поля'); return; } 
+    let users = JSON.parse(localStorage.getItem('socks_users')) || []; 
+    if (users.find(u => u.email === email)) { alert('Email занят'); return; } 
+    let newUser = { name, email, password: pass }; 
+    users.push(newUser); 
+    localStorage.setItem('socks_users', JSON.stringify(users)); 
+    currentUser = newUser; 
+    localStorage.setItem('socks_user', JSON.stringify(currentUser)); 
+    updateAuthUI(); 
+    showToast('Регистрация успешна!'); 
+    closeModal('profileModal'); 
+    filterAndRender(); 
+}
+
+function logout() { 
+    currentUser = null; 
+    localStorage.removeItem('socks_user'); 
+    updateAuthUI(); 
+    showToast('Вы вышли'); 
+    filterAndRender(); 
+}
+
+function closeModal(id) { 
+    document.getElementById(id).style.display = 'none'; 
+}
+
+// ========== Админ-панель ==========
+function adminTools() {
+    let action = prompt('Админ панель:\n1 - Заказы (смена статуса)\n2 - Пользователи');
+    if (action === '1') {
+        if (!orders.length) { alert('Нет заказов'); return; }
+        let list = orders.map((o, i) => `${i+1}. ${o.date} | ${o.total}₽ | статус: ${o.status}`).join('\n');
+        let idx = prompt(`Список заказов:\n${list}\nВведите номер заказа для смены статуса (1-${orders.length})`);
+        if (idx && orders[parseInt(idx)-1]) {
+            let st = prompt('Новый статус (новый / в обработке / отправлен / завершён)');
+            if (st) { 
+                orders[parseInt(idx)-1].status = st; 
+                localStorage.setItem('socks_orders', JSON.stringify(orders)); 
+                alert('Статус обновлён'); 
+                if (currentUser) renderProfileOrders(); 
             }
         }
+    } else if (action === '2') { 
+        let users = JSON.parse(localStorage.getItem('socks_users')) || []; 
+        alert(users.map(u => `${u.name} (${u.email})`).join('\n') || 'Нет пользователей'); 
+    }
+}
+
+// ========== Инициализация событий ==========
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('searchBtn').addEventListener('click', filterAndRender);
+    document.getElementById('globalSearch').addEventListener('keyup', filterAndRender);
+    document.getElementById('resetFiltersBtn').addEventListener('click', () => {
+        document.getElementById('priceMin').value = 0;
+        document.getElementById('priceMax').value = 3000;
+        document.getElementById('sizeSelect').value = '';
+        document.querySelectorAll('#colorGroup input').forEach(c => c.checked = false);
+        document.querySelectorAll('#materialGroup input').forEach(c => c.checked = false);
+        document.getElementById('globalSearch').value = '';
+        filterAndRender();
     });
-}
+    document.querySelectorAll('#colorGroup input, #materialGroup input, #sizeSelect, #priceMin, #priceMax')
+        .forEach(el => el.addEventListener('change', filterAndRender));
 
-function loadOrders() {
-    const userOrders = orders.filter(o => o.user_id === currentUser.id);
-    const ordersDiv = document.getElementById('ordersList');
-    if (userOrders.length === 0) { ordersDiv.innerHTML = '<p>У вас пока нет заказов</p>'; return; }
-    ordersDiv.innerHTML = userOrders.map(order => `
-        <div class="order-item">
-            <div><strong>Заказ #${order.id}</strong><br>${order.date}<br>Статус: ${order.status}</div>
-            <div>${order.total} ₽<br>${order.items.length} товаров</div>
-        </div>
-    `).join('');
-}
+    document.getElementById('cartBtn').addEventListener('click', openCartModal);
+    document.getElementById('closeCartX').addEventListener('click', () => closeModal('cartModal'));
+    document.getElementById('checkoutFinalBtn').addEventListener('click', checkoutOrder);
 
-function loadFavorites() {
-    const userFavorites = favorites.filter(f => f.user_id === currentUser.id);
-    const favBooks = userFavorites.map(f => books.find(b => b.id === f.book_id)).filter(b => b);
-    const favDiv = document.getElementById('favoritesList');
-    if (favBooks.length === 0) { favDiv.innerHTML = '<p>У вас пока нет избранных книг</p>'; return; }
-    favDiv.innerHTML = favBooks.map(book => `
-        <div class="book-card" style="cursor:pointer" onclick="showBookDetail(${book.id}); closeModal('profileModal')">
-            <div class="book-cover" style="height:150px; background-image: url('${book.cover || ''}'); background-size: cover;">${!book.cover ? '📖' : ''}</div>
-            <div class="book-info">
-                <div class="book-title">${book.title}</div>
-                <div class="book-price">${book.price} ₽</div>
-                <button onclick="event.stopPropagation(); addToCart({id:${book.id},title:'${book.title.replace(/'/g, "\\'")}',price:${book.price},cover:'${book.cover}'})">В корзину</button>
-            </div>
-        </div>
-    `).join('');
-}
+    document.getElementById('profileBtn').addEventListener('click', () => { 
+        document.getElementById('profileModal').style.display = 'flex'; 
+        updateAuthUI(); 
+    });
+    document.getElementById('closeProfileBtn').addEventListener('click', () => closeModal('profileModal'));
+    document.getElementById('showLoginBtn').addEventListener('click', () => { 
+        document.getElementById('loginForm').style.display = 'block'; 
+        document.getElementById('regForm').style.display = 'none'; 
+        document.getElementById('showLoginBtn').classList.add('active');
+        document.getElementById('showRegBtn').classList.remove('active');
+    });
+    document.getElementById('showRegBtn').addEventListener('click', () => { 
+        document.getElementById('loginForm').style.display = 'none'; 
+        document.getElementById('regForm').style.display = 'block';
+        document.getElementById('showRegBtn').classList.add('active');
+        document.getElementById('showLoginBtn').classList.remove('active');
+    });
+    document.getElementById('doLoginBtn').addEventListener('click', doLogin);
+    document.getElementById('doRegBtn').addEventListener('click', doRegister);
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    document.getElementById('adminBtn').addEventListener('click', adminTools);
 
-function loadUserReviews() {
-    const userReviews = reviews.filter(r => r.user_id === currentUser.id);
-    const reviewsDiv = document.getElementById('reviewsList');
-    if (userReviews.length === 0) { reviewsDiv.innerHTML = '<p>У вас пока нет отзывов</p>'; return; }
-    reviewsDiv.innerHTML = userReviews.map(review => {
-        const book = books.find(b => b.id === review.book_id);
-        return `<div class="review-card"><strong>${book?.title || 'Книга'}</strong><div class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}</div><p>${review.comment}</p><small>${review.date}</small></div>`;
-    }).join('');
-}
+    document.querySelectorAll('.category-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            document.querySelectorAll('.category-link').forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            activeCategory = link.dataset.cat;
+            document.getElementById('categoryTitle').innerText = activeCategory === 'all' ? 'Все модели' : activeCategory;
+            filterAndRender();
+        });
+    });
 
-function saveProfile() {
-    const newName = document.getElementById('profileName').value;
-    const newEmail = document.getElementById('profileEmail').value;
-    const newPhone = document.getElementById('profilePhone').value;
-    const newAddress = document.getElementById('profileAddress').value;
-    const newPassword = document.getElementById('profilePassword').value;
-    
-    if (!newEmail) {
-        alert('Email не может быть пустым');
-        return;
-    }
-    
-    // Проверка, что новый email не принадлежит другому пользователю
-    const existingUser = users.find(u => u.email === newEmail && u.id !== currentUser.id);
-    if (existingUser) {
-        alert('Пользователь с таким email уже существует');
-        return;
-    }
-    
-    currentUser.name = newName;
-    currentUser.email = newEmail;
-    currentUser.phone = newPhone;
-    currentUser.address = newAddress;
-    if (newPassword && newPassword.trim() !== '') {
-        currentUser.password = newPassword;
-    }
-    
-    const userIndex = users.findIndex(u => u.id === currentUser.id);
-    if (userIndex !== -1) {
-        users[userIndex] = { ...currentUser };
-    }
-    
-    saveAllData();
+    window.onclick = e => { 
+        if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none'; 
+    };
+
+    filterAndRender();
+    updateCartUI();
     updateAuthUI();
-    alert('Профиль успешно обновлён!');
-    closeModal('profileModal');
-}
-
-// ============================================
-// МОДАЛЬНЫЕ ОКНА
-// ============================================
-
-function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
-function openRegisterModal() { document.getElementById('registerModal').style.display = 'flex'; }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-// ============================================
-// ИНИЦИАЛИЗАЦИЯ
-// ============================================
-
-document.getElementById('openCartBtn').onclick = () => { renderCartModal(); document.getElementById('cartModal').style.display = 'flex'; };
-document.getElementById('checkoutBtn').onclick = checkout;
-
-const headerSearchBtn = document.getElementById('searchBtn');
-if (headerSearchBtn) headerSearchBtn.onclick = () => filterAndSortBooks();
-const headerSearchInput = document.getElementById('searchInput');
-if (headerSearchInput) headerSearchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') filterAndSortBooks(); });
-
-updateAuthUI();
-showMainPage();
+});

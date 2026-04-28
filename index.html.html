@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Носки.ру — интернет-магазин носков</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+    <div class="navbar">
+        <div class="nav-container">
+            <div class="nav-top">
+                <div class="logo" onclick="navigateToCatalog()">
+                    <h1>Носки.<span>ру</span></h1>
+                    <p>качество, стиль, комфорт</p>
+                </div>
+                <div class="search-wrapper">
+                    <div class="search-box">
+                        <input type="text" id="globalSearch" placeholder="Поиск по названию...">
+                        <button id="searchBtn"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+                <div class="user-menu">
+                    <button class="icon-btn" id="profileBtn"><i class="fas fa-user-circle"></i> Личный кабинет</button>
+                    <button class="icon-btn" id="cartBtn"><i class="fas fa-bag-shopping"></i> Корзина <span id="cartCounter" class="cart-count">0</span></button>
+                </div>
+            </div>
+        </div>
+        <div class="category-bar">
+            <div class="category-list" id="categoryMenu">
+                <span data-cat="all" class="category-link active">Все носки</span>
+                <span data-cat="Повседневные" class="category-link">Повседневные</span>
+                <span data-cat="Спортивные" class="category-link">Спортивные</span>
+                <span data-cat="Тёплые" class="category-link">Тёплые</span>
+                <span data-cat="Дизайнерские" class="category-link">Дизайнерские</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="catalogView">
+        <div class="main-layout">
+            <aside class="filters-card">
+                <h3><i class="fas fa-sliders-h"></i> Фильтры</h3>
+                <div class="filter-section">
+                    <span class="filter-title">💰 Цена (₽)</span>
+                    <div class="price-inputs">
+                        <input type="number" id="priceMin" placeholder="от" value="0">
+                        <input type="number" id="priceMax" placeholder="до" value="3000">
+                    </div>
+                </div>
+                <div class="filter-section">
+                    <span class="filter-title">📏 Размер (см)</span>
+                    <select id="sizeSelect">
+                        <option value="">Любой</option>
+                        <option>22-23</option><option>24-25</option><option>26-27</option><option>28-30</option><option>31-33</option>
+                    </select>
+                </div>
+                <div class="filter-section">
+                    <span class="filter-title">🎨 Цвет</span>
+                    <div class="checkbox-group" id="colorGroup">
+                        <label><input type="checkbox" value="Белый"> Белый</label>
+                        <label><input type="checkbox" value="Черный"> Черный</label>
+                        <label><input type="checkbox" value="Серый"> Серый</label>
+                        <label><input type="checkbox" value="Синий"> Синий</label>
+                        <label><input type="checkbox" value="Красный"> Красный</label>
+                    </div>
+                </div>
+                <div class="filter-section">
+                    <span class="filter-title">🧵 Состав</span>
+                    <div class="checkbox-group" id="materialGroup">
+                        <label><input type="checkbox" value="Хлопок"> Хлопок</label>
+                        <label><input type="checkbox" value="Шерсть"> Шерсть</label>
+                        <label><input type="checkbox" value="Синтетика"> Синтетика</label>
+                    </div>
+                </div>
+                <button class="reset-filters" id="resetFiltersBtn">Сбросить все фильтры</button>
+            </aside>
+
+            <section>
+                <div class="catalog-header">
+                    <h2 id="categoryTitle">Все модели</h2>
+                    <span id="resultStats"></span>
+                </div>
+                <div class="product-grid" id="productGrid"></div>
+            </section>
+        </div>
+    </div>
+
+    <div id="detailView" style="display: none;"></div>
+</div>
+
+<!-- Модалка профиля -->
+<div id="profileModal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h2><i class="fas fa-id-card"></i> Личный кабинет</h2>
+            <button class="close-modal" id="closeProfileBtn">&times;</button>
+        </div>
+        <div id="profileContent">
+            <div id="unauthBlock">
+                <div class="auth-tabs">
+                    <button id="showLoginBtn" class="active">Вход</button>
+                    <button id="showRegBtn">Регистрация</button>
+                </div>
+                <div id="loginForm">
+                    <input type="email" id="loginEmail" placeholder="Email">
+                    <input type="password" id="loginPassword" placeholder="Пароль">
+                    <button id="doLoginBtn">Войти</button>
+                </div>
+                <div id="regForm" style="display:none;">
+                    <input type="text" id="regFullname" placeholder="ФИО">
+                    <input type="email" id="RegEmail" placeholder="Email">
+                    <input type="password" id="RegPassword" placeholder="Пароль">
+                    <button id="doRegBtn">Создать аккаунт</button>
+                </div>
+            </div>
+            <div id="authBlock" style="display:none;">
+                <div class="user-info">
+                    <p><strong id="userNameDisplay"></strong></p>
+                    <p><span id="userEmailDisplay"></span></p>
+                    <button id="logoutBtn">Выйти</button>
+                </div>
+                <h3>История заказов</h3>
+                <div id="orderHistoryList"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка корзины -->
+<div id="cartModal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3>🛒 Корзина</h3>
+            <button class="close-modal" id="closeCartX">&times;</button>
+        </div>
+        <div id="cartList"></div>
+        <div id="cartTotalSum"></div>
+        <button id="checkoutFinalBtn">Оформить заказ</button>
+    </div>
+</div>
+
+<div class="admin-badge" id="adminBtn"><i class="fas fa-crown"></i> Админ</div>
+
+<script src="script.js"></script>
+</body>
+</html>
